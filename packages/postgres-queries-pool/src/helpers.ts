@@ -1,6 +1,14 @@
 const tokenPattern = /\$[a-zA-Z]([a-zA-Z0-9_]*)\b/g;
 
-export const namedToNumericParameter = (namedSql, namedParameters = {}) => {
+interface ParameterizedQuery {
+    sql: string;
+    parameters: object;
+}
+
+export const namedToNumericParameter = (
+    namedSql: string,
+    namedParameters: object = {},
+): ParameterizedQuery => {
     const fillableTokens = Object.keys(namedParameters);
     let matchedTokens = namedSql.match(tokenPattern);
     if (!matchedTokens) {
@@ -33,7 +41,7 @@ export const namedToNumericParameter = (namedSql, namedParameters = {}) => {
     }, namedSql);
 
     return {
-        sql,
         parameters,
+        sql,
     };
 };
