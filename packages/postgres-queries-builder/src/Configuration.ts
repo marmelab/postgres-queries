@@ -8,7 +8,7 @@ export interface AnyMap {
 
 export interface Query {
     sql: string;
-    parameters: StringMap;
+    parameters?: StringMap;
     returnOne: boolean;
 }
 
