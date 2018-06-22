@@ -1,0 +1,28 @@
+{
+    "extends": [
+        "tslint:latest",
+        "tslint-eslint-rules",
+        "tslint-config-prettier"
+    ],
+    "rulesDirectory": [
+        "tslint-plugin-prettier"
+    ],
+    "rules": {
+        "prettier": [
+            true,
+            {
+                "singleQuote": true,
+                "tabWidth": 4,
+                "trailingComma": "all"
+            }
+        ],
+        "no-implicit-dependencies": [
+            true,
+            "dev"
+        ],
+        "no-submodule-imports": false,
+        "no-unused-variable": [true, {
+            "check-parameters": true
+        }]
+    }
+}
