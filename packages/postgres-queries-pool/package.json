@@ -1,0 +1,7 @@
+{
+  "name": "postgres-queries-pool",
+  "version": "0.1.0",
+  "dependencies": {
+    "pg": "~7.4.3"
+  }
+}

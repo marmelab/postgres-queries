@@ -1,0 +1,7 @@
+{
+    "private": true,
+    "name": "postgres-queries",
+    "workspaces": [
+        "packages/*"
+    ]
+}
