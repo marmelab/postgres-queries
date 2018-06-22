@@ -1,0 +1,1 @@
+export { selectOne } from './selectOne';

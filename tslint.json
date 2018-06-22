@@ -16,6 +16,8 @@
                 "trailingComma": "all"
             }
         ],
+        "interface-name": [true, "never-prefix"],
+        "only-arrow-functions": false,
         "no-implicit-dependencies": [
             true,
             "dev"
