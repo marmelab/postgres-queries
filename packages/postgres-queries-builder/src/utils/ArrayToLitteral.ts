@@ -1,4 +1,4 @@
-export default function(keys: any, values: any = []) {
+export const arrayToLitteral = (keys: any, values: any = []) => {
     return keys.reduce(
         (object, key, index) => ({
             ...object,
@@ -6,4 +6,4 @@ export default function(keys: any, values: any = []) {
         }),
         {},
     );
-}
+};

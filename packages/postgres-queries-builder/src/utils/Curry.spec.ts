@@ -1,4 +1,4 @@
-import curry from './curry';
+import { curry } from './Curry';
 
 describe('curry', () => {
     it('should return a function', () => {

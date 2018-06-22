@@ -10,6 +10,6 @@ export interface Query {
 
 export type QueryFun = (raw: StringMap | string) => Query;
 
-export default interface Config {
+export interface Config {
     table: string;
 }

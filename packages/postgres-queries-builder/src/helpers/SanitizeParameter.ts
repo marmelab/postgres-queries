@@ -1,6 +1,6 @@
-import arrayToLitteral from '../utils/arrayToLitteral';
-import curry from '../utils/curry';
-import { getColType } from './whereQuery';
+import { arrayToLitteral } from '../utils/ArrayToLitteral';
+import { curry } from '../utils/Curry';
+import { getColType } from './WhereQuery';
 
 function getTrueColName(colName: string, cols) {
     switch (getColType(colName, cols)) {
@@ -21,7 +21,7 @@ function getTrueColName(colName: string, cols) {
     }
 }
 
-function sanitizeParameter(rawCols, parameters) {
+function sanitizeParameterFunc(rawCols, parameters) {
     const cols = Array.isArray(rawCols)
         ? arrayToLitteral(rawCols, undefined)
         : rawCols;
@@ -58,4 +58,4 @@ function sanitizeParameter(rawCols, parameters) {
     );
 }
 
-export default curry(sanitizeParameter);
+export const sanitizeParameter = curry(sanitizeParameterFunc);

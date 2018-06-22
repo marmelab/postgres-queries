@@ -1,4 +1,4 @@
-import checkLiteralKeys from './checkLiteralKeys';
+import { checkLiteralKeys } from './CheckLiteralKeys';
 
 describe('checkLiteralKeys', () => {
     it('should return given object if all given keys exists', () => {

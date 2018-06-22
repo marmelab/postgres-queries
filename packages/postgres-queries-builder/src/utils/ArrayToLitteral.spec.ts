@@ -1,4 +1,4 @@
-import arrayToLitteral from './arrayToLitteral';
+import { arrayToLitteral } from './ArrayToLitteral';
 
 describe('arrayToLitteral', () => {
     it('should convert [keys] and [values] to literal', () => {

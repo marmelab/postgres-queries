@@ -1,4 +1,16 @@
-import whereQuery, * as whereQueryGet from './whereQuery';
+import {
+    getColPlaceHolder,
+    getColType,
+    getFrom,
+    getLike,
+    getMatch,
+    getNot,
+    getNotLike,
+    getQuery,
+    getTo,
+    sortQueryType,
+    whereQuery,
+} from './WhereQuery';
 
 describe('whereQuery', () => {
     it('should return whereQuery', () => {
@@ -51,44 +63,35 @@ describe('whereQuery', () => {
 
     describe('getColPlaceHolder', () => {
         it('should return value if value is IS_NULL or IS_NOT_NULL', () => {
-            expect(
-                whereQueryGet.getColPlaceHolder('colName', 'IS_NULL'),
-            ).toEqual('IS_NULL');
-            expect(
-                whereQueryGet.getColPlaceHolder('colName', 'IS NULL'),
-            ).toEqual('IS NULL');
-            expect(
-                whereQueryGet.getColPlaceHolder('colName', 'IS_NOT_NULL'),
-            ).toEqual('IS_NOT_NULL');
-            expect(
-                whereQueryGet.getColPlaceHolder('colName', 'IS NOT NULL'),
-            ).toEqual('IS NOT NULL');
-        });
-
-        it('should return IS NULL if value is null', () => {
-            expect(whereQueryGet.getColPlaceHolder('colName', null)).toEqual(
-                'IS NULL',
+            expect(getColPlaceHolder('colName', 'IS_NULL')).toEqual('IS_NULL');
+            expect(getColPlaceHolder('colName', 'IS NULL')).toEqual('IS NULL');
+            expect(getColPlaceHolder('colName', 'IS_NOT_NULL')).toEqual(
+                'IS_NOT_NULL',
+            );
+            expect(getColPlaceHolder('colName', 'IS NOT NULL')).toEqual(
+                'IS NOT NULL',
             );
         });
 
+        it('should return IS NULL if value is null', () => {
+            expect(getColPlaceHolder('colName', null)).toEqual('IS NULL');
+        });
+
         it('should return IS NOT NULL if value is null and not is true', () => {
-            expect(
-                whereQueryGet.getColPlaceHolder('colName', null, true),
-            ).toEqual('IS NOT NULL');
+            expect(getColPlaceHolder('colName', null, true)).toEqual(
+                'IS NOT NULL',
+            );
         });
 
         it('should return IN query if value is an array', () => {
             expect(
-                whereQueryGet.getColPlaceHolder('colName', [
-                    'some value',
-                    'other value',
-                ]),
+                getColPlaceHolder('colName', ['some value', 'other value']),
             ).toEqual('IN ($colName1, $colName2)');
         });
 
         it('should return NOT IN query if value is an array and not is true', () => {
             expect(
-                whereQueryGet.getColPlaceHolder(
+                getColPlaceHolder(
                     'colName',
                     ['some value', 'other value'],
                     true,
@@ -97,106 +100,95 @@ describe('whereQuery', () => {
         });
 
         it('should return != $colName if not is true', () => {
-            expect(
-                whereQueryGet.getColPlaceHolder('colName', 'some value', true),
-            ).toEqual('!= $colName');
+            expect(getColPlaceHolder('colName', 'some value', true)).toEqual(
+                '!= $colName',
+            );
         });
 
         it('should return = $colName otherwise', () => {
-            expect(
-                whereQueryGet.getColPlaceHolder('colName', 'some value'),
-            ).toEqual('= $colName');
+            expect(getColPlaceHolder('colName', 'some value')).toEqual(
+                '= $colName',
+            );
         });
     });
 
     describe('getColType', () => {
         it('should return query, if column is in searchableCol', () => {
-            expect(whereQueryGet.getColType('col', ['col'])).toEqual('query');
+            expect(getColType('col', ['col'])).toEqual('query');
         });
 
         it('should return match, if col is match and searchableCols contain at least one element', () => {
-            expect(whereQueryGet.getColType('match', ['col'])).toEqual('match');
+            expect(getColType('match', ['col'])).toEqual('match');
         });
 
         it('should return discarded if col is match but searchableCols is empty', () => {
-            expect(whereQueryGet.getColType('match', [])).toEqual('discarded');
+            expect(getColType('match', [])).toEqual('discarded');
         });
 
         it('should return discarded if col is not in searchableCols', () => {
-            expect(whereQueryGet.getColType('needle', ['haystack'])).toEqual(
+            expect(getColType('needle', ['haystack'])).toEqual('discarded');
+        });
+
+        it('should return to if column is suffixed by to and is in searchableCols', () => {
+            expect(getColType('to_column', ['column'])).toEqual('to');
+        });
+
+        it('should return discarded if column is suffixed by to but is not in searchableCols', () => {
+            expect(getColType('to_column', ['other_column'])).toEqual(
                 'discarded',
             );
         });
 
-        it('should return to if column is suffixed by to and is in searchableCols', () => {
-            expect(whereQueryGet.getColType('to_column', ['column'])).toEqual(
-                'to',
-            );
-        });
-
-        it('should return discarded if column is suffixed by to but is not in searchableCols', () => {
-            expect(
-                whereQueryGet.getColType('to_column', ['other_column']),
-            ).toEqual('discarded');
-        });
-
         it('should return from if column is suffixed by from and is in searchableCols', () => {
-            expect(whereQueryGet.getColType('from_column', ['column'])).toEqual(
-                'from',
-            );
+            expect(getColType('from_column', ['column'])).toEqual('from');
         });
 
         it('should return discarded if column is suffixed by from but is not in searchableCols', () => {
-            expect(
-                whereQueryGet.getColType('from_column', ['other_column']),
-            ).toEqual('discarded');
-        });
-
-        it('should return like if column is suffixed by like and is in searchableCols', () => {
-            expect(whereQueryGet.getColType('like_column', ['column'])).toEqual(
-                'like',
+            expect(getColType('from_column', ['other_column'])).toEqual(
+                'discarded',
             );
         });
 
+        it('should return like if column is suffixed by like and is in searchableCols', () => {
+            expect(getColType('like_column', ['column'])).toEqual('like');
+        });
+
         it('should return discarded if column is suffixed by like but is not in searchableCols', () => {
-            expect(
-                whereQueryGet.getColType('like_column', ['other_column']),
-            ).toEqual('discarded');
+            expect(getColType('like_column', ['other_column'])).toEqual(
+                'discarded',
+            );
         });
 
         it('should return not like if column is suffixed by not_like and is in searchableCols', () => {
-            expect(
-                whereQueryGet.getColType('not_like_column', ['column']),
-            ).toEqual('not like');
+            expect(getColType('not_like_column', ['column'])).toEqual(
+                'not like',
+            );
         });
 
         it('should return discarded if column is suffixed by not_like but is not in searchableCols', () => {
-            expect(
-                whereQueryGet.getColType('not_like_column', ['other_column']),
-            ).toEqual('discarded');
+            expect(getColType('not_like_column', ['other_column'])).toEqual(
+                'discarded',
+            );
         });
     });
 
     describe('sortQueryType', () => {
         it('should regroup query by their type', () => {
             expect(
-                whereQueryGet.sortQueryType(
+                sortQueryType(
                     {
                         column1: 1,
-                        to_column2: 2,
+                        column5: 6,
                         from_column3: 3,
                         like_column4: 4,
                         match: 5,
-                        column5: 6,
+                        to_column2: 2,
                     },
                     ['column1', 'column2', 'column3', 'column4'],
                 ),
             ).toEqual({
-                query: {
-                    column1: 1,
-                },
-                to: {
-                    to_column2: 2,
+                discarded: {
+                    column5: 6,
                 },
                 from: {
                     from_column3: 3,
@@ -207,8 +199,11 @@ describe('whereQuery', () => {
                 match: {
                     match: 5,
                 },
-                discarded: {
-                    column5: 6,
+                query: {
+                    column1: 1,
+                },
+                to: {
+                    to_column2: 2,
                 },
             });
         });
@@ -216,7 +211,7 @@ describe('whereQuery', () => {
 
     describe('getMatch', () => {
         it('should return query and parameter to match a given value if match filter is given', () => {
-            const whereParts = whereQueryGet.getMatch(
+            const whereParts = getMatch(
                 {
                     match: 'needle',
                 },
@@ -229,7 +224,7 @@ describe('whereQuery', () => {
         });
 
         it('should augment passed result if any', () => {
-            const whereParts = whereQueryGet.getMatch(
+            const whereParts = getMatch(
                 {
                     match: 'needle',
                 },
@@ -244,7 +239,7 @@ describe('whereQuery', () => {
         });
 
         it('should return passed result if there is no searchableCols', () => {
-            const whereParts = whereQueryGet.getMatch(
+            const whereParts = getMatch(
                 {
                     match: 'needle',
                 },
@@ -258,7 +253,7 @@ describe('whereQuery', () => {
 
     describe('getFrom', () => {
         it('should return query and parameter to test for date after column value if given column starting with from_', () => {
-            const whereParts = whereQueryGet.getFrom(
+            const whereParts = getFrom(
                 {
                     from_date: 'date',
                 },
@@ -271,22 +266,22 @@ describe('whereQuery', () => {
         });
 
         it('should work with several column starting with from_', () => {
-            const whereParts = whereQueryGet.getFrom(
+            const whereParts = getFrom(
                 {
-                    from_date: 'date1',
                     from_birth: 'date2',
+                    from_date: 'date1',
                 },
                 ['column', 'date', 'birth'],
             );
 
             expect(whereParts).toEqual([
-                'date::timestamp >= $from_date::timestamp',
                 'birth::timestamp >= $from_birth::timestamp',
+                'date::timestamp >= $from_date::timestamp',
             ]);
         });
 
         it('should augment passed result if any', () => {
-            const whereParts = whereQueryGet.getFrom(
+            const whereParts = getFrom(
                 {
                     from_date: 'date',
                 },
@@ -303,7 +298,7 @@ describe('whereQuery', () => {
 
     describe('getTo', () => {
         it('should return query and parameter to test for date after column value if given column starting with to_', () => {
-            const whereParts = whereQueryGet.getTo(
+            const whereParts = getTo(
                 {
                     to_date: 'date',
                 },
@@ -316,22 +311,22 @@ describe('whereQuery', () => {
         });
 
         it('should work with several column starting with to_', () => {
-            const whereParts = whereQueryGet.getTo(
+            const whereParts = getTo(
                 {
-                    to_date: 'date1',
                     to_birth: 'date2',
+                    to_date: 'date1',
                 },
                 ['column', 'date', 'birth'],
             );
 
             expect(whereParts).toEqual([
-                'date::timestamp <= $to_date::timestamp',
                 'birth::timestamp <= $to_birth::timestamp',
+                'date::timestamp <= $to_date::timestamp',
             ]);
         });
 
         it('should augment passed result if any', () => {
-            const whereParts = whereQueryGet.getTo(
+            const whereParts = getTo(
                 {
                     to_date: 'date',
                 },
@@ -348,7 +343,7 @@ describe('whereQuery', () => {
 
     describe('getLike', () => {
         it('should return query and parameter to test column like value if given column starting with like_', () => {
-            const whereParts = whereQueryGet.getLike(
+            const whereParts = getLike(
                 {
                     like_column: 'pattern',
                 },
@@ -359,7 +354,7 @@ describe('whereQuery', () => {
         });
 
         it('should augment passed result if any', () => {
-            const whereParts = whereQueryGet.getLike(
+            const whereParts = getLike(
                 {
                     like_column: 'pattern',
                 },
@@ -376,7 +371,7 @@ describe('whereQuery', () => {
 
     describe('getNotLike', () => {
         it('should return query and parameter to test column not like value if given column starting with not_like_', () => {
-            const whereParts = whereQueryGet.getNotLike(
+            const whereParts = getNotLike(
                 {
                     not_like_column: 'pattern',
                 },
@@ -389,7 +384,7 @@ describe('whereQuery', () => {
         });
 
         it('should augment passed result if any', () => {
-            const whereParts = whereQueryGet.getNotLike(
+            const whereParts = getNotLike(
                 {
                     not_like_column: 'pattern',
                 },
@@ -406,7 +401,7 @@ describe('whereQuery', () => {
 
     describe('getNot', () => {
         it('should return query and parameter to test column not equal to value if given column starting with not_', () => {
-            const whereParts = whereQueryGet.getNot(
+            const whereParts = getNot(
                 {
                     not_column: 'not me',
                 },
@@ -417,7 +412,7 @@ describe('whereQuery', () => {
         });
 
         it('should augment passed result if any', () => {
-            const whereParts = whereQueryGet.getNot(
+            const whereParts = getNot(
                 {
                     not_column: 'not me',
                 },
@@ -434,7 +429,7 @@ describe('whereQuery', () => {
 
     describe('getQuery', () => {
         it('should return query and parameter for parameter in searchableCols', () => {
-            const whereParts = whereQueryGet.getQuery(
+            const whereParts = getQuery(
                 {
                     column1: 1,
                     column2: 2,
@@ -451,7 +446,7 @@ describe('whereQuery', () => {
         });
 
         it('should return replace "." in column name by "__" for parameter name', () => {
-            const whereParts = whereQueryGet.getQuery(
+            const whereParts = getQuery(
                 {
                     'table.column1': 1,
                     'table.column2': 2,
@@ -468,7 +463,7 @@ describe('whereQuery', () => {
         });
 
         it('should augment passed result if any', () => {
-            const whereParts = whereQueryGet.getQuery(
+            const whereParts = getQuery(
                 {
                     column1: 1,
                 },
@@ -483,7 +478,7 @@ describe('whereQuery', () => {
         });
 
         it('should return passed result if no filter is given', () => {
-            const whereParts = whereQueryGet.getQuery(
+            const whereParts = getQuery(
                 {},
                 ['column1', 'column2', 'column3'],
                 ['column1 = $column1'],

@@ -1,4 +1,4 @@
-import sanitizeParameter from './sanitizeParameter';
+import { sanitizeParameter } from './SanitizeParameter';
 
 describe('sanitizeParameter', () => {
     it('should keep only attributes passed in first argument', () => {

@@ -1,6 +1,6 @@
-import middleware from '../utils/middleware';
+import { middleware } from '../utils/Middleware';
 
-export function getColPlaceHolder(column, value, not) {
+export const getColPlaceHolder = (column, value, not)  => {
     const normalizedColumn = column.replace('.', '__');
     const type = Array.isArray(value) ? 'IN' : value;
     switch (type) {
@@ -21,9 +21,9 @@ export function getColPlaceHolder(column, value, not) {
         default:
             return `${not ? '!=' : '='} $${normalizedColumn}`;
     }
-}
+};
 
-export function getColType(column, searchableCols) {
+export const getColType = (column, searchableCols) => {
     if (!searchableCols.length) {
         console.warn(
             'There are no allowed columns to be searched, all filters will be ignored',
@@ -72,9 +72,9 @@ export function getColType(column, searchableCols) {
     );
 
     return 'discarded';
-}
+};
 
-export function sortQueryType(filters, searchableCols) {
+export const sortQueryType = (filters, searchableCols) => {
     return Object.keys(filters).reduce(
         (result, col) => {
             const colType = getColType(col, searchableCols);
@@ -86,9 +86,9 @@ export function sortQueryType(filters, searchableCols) {
         },
         { match: {}, from: {}, to: {}, query: {} },
     );
-}
+};
 
-export function getMatch(filters, searchableCols, whereParts = []) {
+export const getMatch = (filters, searchableCols, whereParts = []) => {
     return !searchableCols.length
         ? whereParts
         : Object.keys(filters).reduce(
@@ -103,9 +103,9 @@ export function getMatch(filters, searchableCols, whereParts = []) {
               ],
               whereParts,
           );
-}
+};
 
-export function getLike(filters, searchableCols, whereParts = []) {
+export const getLike = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -113,9 +113,9 @@ export function getLike(filters, searchableCols, whereParts = []) {
         ],
         whereParts,
     );
-}
+};
 
-export function getNotLike(filters, searchableCols, whereParts = []) {
+export const getNotLike = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -123,9 +123,9 @@ export function getNotLike(filters, searchableCols, whereParts = []) {
         ],
         whereParts,
     );
-}
+};
 
-export function getFrom(filters, searchableCols, whereParts = []) {
+export const getFrom = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -136,9 +136,9 @@ export function getFrom(filters, searchableCols, whereParts = []) {
         ],
         whereParts,
     );
-}
+};
 
-export function getTo(filters, searchableCols, whereParts = []) {
+export const getTo = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -149,9 +149,9 @@ export function getTo(filters, searchableCols, whereParts = []) {
         ],
         whereParts,
     );
-}
+};
 
-export function getNot(filters, searchableCols, whereParts = []) {
+export const getNot = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -163,9 +163,9 @@ export function getNot(filters, searchableCols, whereParts = []) {
         ],
         whereParts,
     );
-}
+};
 
-export function getQuery(filters, searchableCols, whereParts = []) {
+export const getQuery = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -173,13 +173,13 @@ export function getQuery(filters, searchableCols, whereParts = []) {
         ],
         whereParts,
     );
-}
+};
 
-export function getResult(filters, searchableCols, whereParts = []) {
+export const getResult = (filters, searchableCols, whereParts = []) => {
     return whereParts.length ? `WHERE ${whereParts.join(' AND ')}` : '';
-}
+};
 
-export default function whereQuery(filters, searchableCols) {
+export const whereQuery = (filters, searchableCols) => {
     return middleware(sortQueryType(filters, searchableCols), searchableCols)
         .use(getMatch, 'match')
         .use(getFrom, 'from')
@@ -190,4 +190,4 @@ export default function whereQuery(filters, searchableCols) {
         .use(getQuery, 'query')
         .use(getResult)
         .execute([]);
-}
+};

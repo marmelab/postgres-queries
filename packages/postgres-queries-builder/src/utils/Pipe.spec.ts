@@ -1,4 +1,4 @@
-import pipe from './pipe';
+import { pipe } from './Pipe';
 
 describe('pipe', () => {
     it('should create a function composed of the given function', () => {

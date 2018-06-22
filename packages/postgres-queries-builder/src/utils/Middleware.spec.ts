@@ -1,4 +1,4 @@
-import middleware from './middleware';
+import { middleware } from './Middleware';
 
 describe('middleware', () => {
     it('should execute used function f with options, and null', () => {

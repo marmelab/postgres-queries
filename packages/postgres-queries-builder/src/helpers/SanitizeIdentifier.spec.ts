@@ -1,4 +1,4 @@
-import sanitizeIdentifier from './sanitizeIdentifier';
+import { sanitizeIdentifier } from './SanitizeIdentifier';
 
 describe('sanitizeIdentifier', () => {
     it('should return identifier if it match primaryKey', () => {

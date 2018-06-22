@@ -1,4 +1,4 @@
-import { selectOne } from './selectOne';
+import { selectOne } from './SelectOne';
 
 describe('QUERY selectOne', () => {
     it('should generate sql and parameter for selecting one row', () => {

@@ -1,4 +1,4 @@
-export default (keys: any[]) => object => {
+export const checkLiteralKeys = (keys: any[]) => object => {
     if (
         Object.keys(object).length !== keys.length ||
         Object.keys(object).some(

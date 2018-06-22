@@ -1,6 +1,6 @@
-import Config, { QueryFun, StringMap } from '../../configuration';
-import sanitizeIdentifier from '../../helpers/sanitizeIdentifier';
-import whereQuery from '../../helpers/whereQuery';
+import { Config, QueryFun, StringMap } from '../../Configuration';
+import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
+import { whereQuery } from '../../helpers/WhereQuery';
 
 interface SelectOne extends Config {
     primaryKey: string | string[];
