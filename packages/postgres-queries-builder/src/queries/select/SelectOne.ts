@@ -1,4 +1,4 @@
-import { Config, QueryFun, StringMap } from '../../Configuration';
+import { Config, Query, StringMap } from '../../Configuration';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
 import { whereQuery } from '../../helpers/WhereQuery';
 
@@ -7,6 +7,8 @@ interface SelectOne extends Config {
     returnCols: string[];
     permanentFilters?: StringMap;
 }
+
+type QueryFun = (raw: StringMap | string) => Query;
 
 export const selectOne = ({
     table,

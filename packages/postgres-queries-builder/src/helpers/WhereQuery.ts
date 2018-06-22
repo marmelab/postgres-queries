@@ -1,6 +1,6 @@
 import { middleware } from '../utils/Middleware';
 
-export const getColPlaceHolder = (column, value, not)  => {
+export const getColPlaceHolder = (column, value, not) => {
     const normalizedColumn = column.replace('.', '__');
     const type = Array.isArray(value) ? 'IN' : value;
     switch (type) {
