@@ -9,7 +9,7 @@ export interface AnyMap {
 export interface Query {
     sql: string;
     parameters?: StringMap;
-    returnOne: boolean;
+    returnOne?: boolean;
 }
 
 export type SortDir = 'ASC' | 'DESC';
