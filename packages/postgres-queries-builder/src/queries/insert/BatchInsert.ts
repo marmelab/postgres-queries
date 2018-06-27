@@ -8,13 +8,13 @@ interface BatchInsert extends Config {
     returnCols?: string[];
 }
 
-type QueryFun = (rows: AnyMap[]) => Query;
+type QueryFunction = (rows: AnyMap[]) => Query;
 
 export const batchInsert = ({
     table,
     writableCols,
     returnCols,
-}: BatchInsert): QueryFun => {
+}: BatchInsert): QueryFunction => {
     const returning = returningQuery(returnCols);
 
     return rows => {

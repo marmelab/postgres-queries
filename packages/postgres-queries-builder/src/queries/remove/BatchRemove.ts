@@ -11,14 +11,14 @@ interface BatchRemove extends Config {
     permanentFilters?: StringMap;
 }
 
-type QueryFun = (ids: string[] | number[] | StringMap[]) => Query;
+type QueryFunction = (ids: string[] | number[] | StringMap[]) => Query;
 
 export const batchRemove = ({
     table,
     returnCols,
     primaryKey = ['id'],
     permanentFilters = {},
-}: BatchRemove): QueryFun => {
+}: BatchRemove): QueryFunction => {
     const returning = returningQuery(returnCols);
     const selector = [].concat(primaryKey);
     const idSanitizer = sanitizeIdentifier(selector);

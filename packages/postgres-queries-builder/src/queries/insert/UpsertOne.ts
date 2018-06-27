@@ -12,7 +12,7 @@ interface UpsertOne extends Config {
     permanentFilters?: StringMap;
 }
 
-type QueryFun = (data: AnyMap) => Query;
+type QueryFunction = (data: AnyMap) => Query;
 
 export const upsertOne = ({
     table,
@@ -20,7 +20,7 @@ export const upsertOne = ({
     writableCols,
     returnCols,
     permanentFilters = {},
-}: UpsertOne): QueryFun => {
+}: UpsertOne): QueryFunction => {
     const returning = returningQuery(returnCols);
     const primaryKey = [].concat(idCols);
 

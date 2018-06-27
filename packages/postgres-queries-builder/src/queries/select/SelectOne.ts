@@ -8,14 +8,14 @@ interface SelectOne extends Config {
     permanentFilters?: StringMap;
 }
 
-type QueryFun = (raw: StringMap | string) => Query;
+type QueryFunction = (raw: StringMap | string) => Query;
 
 export const selectOne = ({
     table,
     primaryKey = 'id',
     returnCols = ['*'],
     permanentFilters = {},
-}: SelectOne): QueryFun => {
+}: SelectOne): QueryFunction => {
     const select = returnCols.join(', ');
 
     const identifiers = [
