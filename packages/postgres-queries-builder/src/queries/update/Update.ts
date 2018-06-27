@@ -12,7 +12,7 @@ interface Update extends Config {
     permanentFilters?: StringMap;
 }
 
-type QueryFun = (filters: AnyMap, data: AnyMap) => Query;
+type QueryFunction = (filters: any, data: AnyMap) => Query;
 
 export const update = (
     {
@@ -23,7 +23,7 @@ export const update = (
         permanentFilters = {},
     }: Update,
     returnOne = false,
-): QueryFun => {
+): QueryFunction => {
     const filterCols = [
         ...[].concat(selectors),
         ...Object.keys(permanentFilters),

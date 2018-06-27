@@ -22,7 +22,7 @@ interface Filters {
     sortDir?: SortDir;
 }
 
-type QueryFun = (filters?: Filters) => Query;
+type QueryFunction = (filters?: Filters) => Query;
 
 export const select = ({
     table,
@@ -34,7 +34,7 @@ export const select = ({
     withQuery = table.indexOf('JOIN') !== -1,
     permanentFilters = {},
     returnOne,
-}: Select): QueryFun => {
+}: Select): QueryFunction => {
     const primaryKey = [].concat(ids);
     const select = returnCols.length ? returnCols.join(', ') : '*';
 
