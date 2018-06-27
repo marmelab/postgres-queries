@@ -1,8 +1,9 @@
-export const returningQuery = (cols = ['*']) => {
+export const returningQuery = (cols: string | string[] = '*') => {
     if (cols === '*') {
         return 'RETURNING *';
     }
-    if (!cols.length) {
+
+    if (!Array.isArray(cols) || !cols.length) {
         return '';
     }
 

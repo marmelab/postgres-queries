@@ -7,11 +7,11 @@ describe('returningQuery', () => {
         );
     });
 
-    it('should return RETURNING *  clause if received nothing', () => {
+    it('should return RETURNING * clause if received nothing', () => {
         expect(returningQuery()).toEqual('RETURNING *');
     });
 
-    it('should return ``  clause if received empty array', () => {
+    it('should return `` clause if received empty array', () => {
         expect(returningQuery([])).toEqual('');
     });
 });

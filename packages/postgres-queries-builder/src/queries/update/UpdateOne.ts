@@ -4,7 +4,7 @@ import { update } from './Update';
 interface UpdateOne extends Config {
     writableCols: string[];
     primaryKey: string | string[];
-    returnCols?: string[];
+    returnCols?: string | string[];
     permanentFilters?: StringMap;
 }
 

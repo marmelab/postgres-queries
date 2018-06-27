@@ -5,7 +5,7 @@ import { valueSubQuery } from '../../helpers/ValueSubQuery';
 
 interface BatchInsert extends Config {
     writableCols: string[];
-    returnCols?: string[];
+    returnCols?: string | string[];
 }
 
 type QueryFunction = (rows: AnyMap[]) => Query;
