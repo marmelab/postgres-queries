@@ -6,7 +6,7 @@ import { whereQuery } from '../../helpers/WhereQuery';
 import { combineLiterals } from '../../utils/CombineLiterals';
 
 interface BatchRemove extends Config {
-    returnCols: string[];
+    returnCols: string | string[];
     primaryKey: string | string[];
     permanentFilters?: StringMap;
 }
