@@ -8,7 +8,7 @@ import { addSuffix } from '../../utils/AddSuffix';
 interface Update extends Config {
     writableCols: string[];
     filterCols: string[];
-    returnCols?: string[];
+    returnCols?: string | string[];
     permanentFilters?: StringMap;
 }
 

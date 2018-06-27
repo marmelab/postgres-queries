@@ -8,7 +8,7 @@ import { whereQuery } from '../../helpers/WhereQuery';
 interface UpsertOne extends Config {
     primaryKey?: string | string[];
     writableCols: string[];
-    returnCols?: string[];
+    returnCols?: string | string[];
     permanentFilters?: StringMap;
 }
 
