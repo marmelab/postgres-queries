@@ -12,7 +12,7 @@ interface Update extends Config {
     permanentFilters?: StringMap;
 }
 
-type QueryFun = (filters: AnyMap, data: AnyMap) => Query;
+type QueryFun = (filters: any, data: AnyMap) => Query;
 
 export const update = (
     {
