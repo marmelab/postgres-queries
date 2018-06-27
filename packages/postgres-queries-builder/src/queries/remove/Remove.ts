@@ -1,4 +1,4 @@
-import { Config, StringMap } from '../../Configuration';
+import { Config, Query, StringMap } from '../../Configuration';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
 import { sanitizeParameter } from '../../helpers/SanitizeParameter';
@@ -6,14 +6,16 @@ import { whereQuery } from '../../helpers/WhereQuery';
 
 interface Remove extends Config {
     filterCols: string[];
-    returnCols: string[];
+    returnCols: string | string[];
     permanentFilters?: StringMap;
 }
+
+type QueryFunction = (ids: StringMap) => Query;
 
 export const remove = (
     { table, filterCols, returnCols, permanentFilters = {} }: Remove,
     returnOne = false,
-) => {
+): QueryFunction => {
     const returning = returningQuery(returnCols);
 
     return ids => {
