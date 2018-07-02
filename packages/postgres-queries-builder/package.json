@@ -1,19 +1,4 @@
 {
     "name": "postgres-queries-builder",
-    "version": "0.1.0",
-    "scripts": {
-        "test": "jest",
-        "test:watch": "jest --watch"
-    },
-    "jest": {
-        "transform": {
-            "^.+\\.ts$": "ts-jest"
-        },
-        "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
-        "moduleFileExtensions": [
-            "ts",
-            "js",
-            "json"
-        ]
-    }
+    "version": "0.1.0"
 }
