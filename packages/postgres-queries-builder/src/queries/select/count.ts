@@ -1,17 +1,19 @@
-import { Config, Query, StringMap } from '../../Configuration';
+import { AnyMap, Config, Query, StringMap } from '../../Configuration';
 import { whereQuery } from '../../helpers/WhereQuery';
 
 interface Count extends Config {
     permanentFilters?: StringMap;
 }
 
-interface CountParameters {
-    filters?: StringMap;
+interface Filters {
+    filters?: AnyMap;
 }
+
+type QueryFunction = (filters?: Filters) => Query;
 
 export const count = ({ table, permanentFilters = {} }: Count) => ({
     filters,
-}: CountParameters = {}): Query => {
+}: Filters = {}): Query => {
     const mergedFilters = {
         ...permanentFilters,
         ...filters,
