@@ -1,4 +1,4 @@
-import { count } from './count';
+import { count } from './Count';
 
 describe('QUERY count', () => {
     it('should generate SQL to count all rows if no filter is given', () => {
