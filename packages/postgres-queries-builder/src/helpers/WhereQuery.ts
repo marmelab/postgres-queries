@@ -1,3 +1,4 @@
+import * as signale from 'signale';
 import { middleware } from '../utils/Middleware';
 
 export const getColPlaceHolder = (column, value, not) => {
@@ -10,7 +11,7 @@ export const getColPlaceHolder = (column, value, not) => {
         case 'IS NULL':
         case 'IS_NOT_NULL':
         case 'IS NOT NULL':
-            global.console.warn(
+            signale.warn(
                 'Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed',
             );
             return value;
@@ -25,7 +26,7 @@ export const getColPlaceHolder = (column, value, not) => {
 
 export const getColType = (column, searchableCols) => {
     if (!searchableCols.length) {
-        global.console.warn(
+        signale.warn(
             'There are no allowed columns to be searched, all filters will be ignored',
         );
         return 'discarded';
@@ -67,7 +68,7 @@ export const getColType = (column, searchableCols) => {
         return 'not like';
     }
 
-    global.console.warn(
+    signale.warn(
         `Ignoring filter: ${column}. Allowed columns: ${searchableCols}`,
     );
 

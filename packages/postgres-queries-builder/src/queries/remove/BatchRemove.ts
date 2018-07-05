@@ -23,11 +23,8 @@ export const batchRemove = ({
     const selector = [].concat(primaryKey);
     const idSanitizer = sanitizeIdentifier(selector);
 
-    return ids => {
-        const cleanIds = [];
-        (ids as Array<string | number>).forEach(id =>
-            cleanIds.push(idSanitizer(id)),
-        );
+    return (ids: Array<string | number | StringMap>) => {
+        const cleanIds = ids.map(idSanitizer);
         const parameters = batchParameter(selector)(cleanIds);
         const where = whereQuery(
             {
