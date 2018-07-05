@@ -14,7 +14,7 @@ interface Select extends Config {
     returnOne?: boolean;
 }
 
-interface Filters {
+export interface SelectFilters {
     limit?: number;
     offset?: number;
     filters?: AnyMap;
@@ -22,7 +22,7 @@ interface Filters {
     sortDir?: SortDir;
 }
 
-type QueryFunction = (filters?: Filters) => Query;
+type QueryFunction = (filters?: SelectFilters) => Query;
 
 export const select = ({
     table,

@@ -33,7 +33,9 @@ ON ${table}.${primaryKey}::varchar=x.${primaryKey}
 ORDER BY x.ordering;`;
 
     const parameters = flatten(
-        sanitizeParameter([primaryKey], { [primaryKey]: values }),
+        sanitizeParameter([primaryKey], {
+            [Array.isArray(primaryKey) ? primaryKey[0] : primaryKey]: values,
+        }),
     );
 
     return { sql, parameters };
