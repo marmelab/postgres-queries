@@ -2,27 +2,12 @@
   "name": "postgres-queries-pool",
   "version": "0.1.0",
   "scripts": {
-    "build": "tsc --pretty",
-    "test": "jest",
-    "test-watch": "jest --watch"
-  },
-  "dependencies": {
-    "@types/pg": "~7.4.9",
-    "pg": "~7.4.3",
-    "signale": "~1.2.1"
+    "build": "tsc --pretty"
   },
   "devDependencies": {
-    "@types/signale": "~1.2.0"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json"
-    ]
+    "@types/pg": "~7.4.9",
+    "@types/signale": "~1.2.0",
+    "pg": "~7.4.3",
+    "signale": "~1.2.1"
   }
 }

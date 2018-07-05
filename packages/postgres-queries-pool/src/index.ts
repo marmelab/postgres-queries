@@ -8,12 +8,6 @@ interface QueryData {
     returnOne: boolean;
 }
 
-interface QueryData {
-    sql: string;
-    parameters: object;
-    returnOne: boolean;
-}
-
 type QueryWithNamedParameters = (queryData: QueryData) => Promise<any[] | null>;
 
 function setupClient(client: pg.PoolClient) {
