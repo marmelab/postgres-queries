@@ -1,5 +1,5 @@
 {
-  "name": "@pq/postgres-queries-builder",
+  "name": "@alexisjanvier/postgres-queries-builder",
   "version": "0.1.5",
   "description": "",
   "main": "lib/index.js",

@@ -11,7 +11,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@pq/postgres-queries-builder": "^0.1.5",
-    "@pq/postgres-queries-pool": "^0.1.5"
+    "@alexisjanvier/postgres-queries-builder": "^0.1.5",
+    "@alexisjanvier/postgres-queries-pool": "^0.1.5"
   }
 }
