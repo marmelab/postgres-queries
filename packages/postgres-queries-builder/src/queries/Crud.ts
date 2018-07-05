@@ -75,7 +75,10 @@ export const crud = ({
         table,
     });
 
-    const countAll = countAllQuery({ table, permanentFilters });
+    const countAll = countAllQuery({
+        permanentFilters,
+        table,
+    });
 
     const queries = {
         batchInsert,

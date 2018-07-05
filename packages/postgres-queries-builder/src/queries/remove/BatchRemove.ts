@@ -11,7 +11,7 @@ interface BatchRemove extends Config {
     permanentFilters?: StringMap;
 }
 
-type QueryFunction = (ids: string[] | number[] | StringMap[]) => Query;
+type QueryFunction = (ids: Array<string | number | StringMap>) => Query;
 
 export const batchRemove = ({
     table,
@@ -24,9 +24,8 @@ export const batchRemove = ({
     const idSanitizer = sanitizeIdentifier(selector);
 
     return ids => {
-        const cleanIds = ids.map(id => idSanitizer(id));
+        const cleanIds = ids.map(idSanitizer);
         const parameters = batchParameter(selector)(cleanIds);
-
         const where = whereQuery(
             {
                 ...combineLiterals(cleanIds),

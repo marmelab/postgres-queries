@@ -27,7 +27,11 @@ export const selectOne = ({
         const parameters = sanitizeIdentifier(identifiers, {
             ...(typeof rawParameters === 'object'
                 ? rawParameters
-                : { [primaryKey]: rawParameters }),
+                : {
+                      [Array.isArray(primaryKey)
+                          ? primaryKey[0]
+                          : primaryKey]: rawParameters,
+                  }),
             ...permanentFilters,
         });
 
