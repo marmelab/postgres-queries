@@ -13,5 +13,8 @@
   "dependencies": {
     "@types/signale": "~1.2.0",
     "signale": "~1.2.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

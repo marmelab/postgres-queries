@@ -3,7 +3,6 @@
     "scripts": {
         "test": "jest",
         "test:watch": "jest --watch",
-        "prepare": "lerna run prepare",
         "clean": "rimraf packages/**/lib"
     },
     "devDependencies": {

@@ -3,7 +3,7 @@
     "compilerOptions": {
       "baseUrl": "./packages",
       "paths": {
-        "@postgres-queries/*": ["./*/src"]
+        "@pq/*": ["./*/src"]
       }
     }
   }
