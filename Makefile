@@ -15,5 +15,4 @@ test-watch: ## Run Unit Tests Using Watch Mode
 
 publish: ## Publish on npm
 	yarn clean
-	yarn prepare
 	./node_modules/.bin/lerna publish
