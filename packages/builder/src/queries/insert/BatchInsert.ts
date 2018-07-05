@@ -26,7 +26,7 @@ export const batchInsert = ({
         const getValueSubQuery = valueSubQuery(writableCols);
 
         const values = rows
-            .map((__, index) => getValueSubQuery(index + 1))
+            .map((_, index) => getValueSubQuery(index + 1))
             .reduce((result, sqlString) => result.concat(`(${sqlString})`), [])
             .join(', ');
 
