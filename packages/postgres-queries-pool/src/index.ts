@@ -2,8 +2,14 @@ import * as pg from 'pg';
 import * as signale from 'signale';
 import { namedToNumericParameter } from './helpers';
 
-function setupClient(client) {
-    const query = async (
+type QueryWithNamedParameters = (
+    queryTextOrConfig: string | pg.QueryConfig,
+    values?: any[],
+    returnOne?: boolean,
+) => Promise<pg.QueryResult>;
+
+function setupClient(client: pg.PoolClient) {
+    const query: QueryWithNamedParameters = async (
         named,
         parameters = named.parameters,
         returnOne = named.returnOne,
@@ -37,7 +43,8 @@ function setupClient(client) {
         return returnOne ? result[0] : result;
     };
 
-    const linkOne = querier => args => query(querier(...args));
+    const linkOne = (querier: any) => (args: Iterable<object>) =>
+        query(querier(...args));
 
     const link = querier => {
         if (typeof querier === 'function') {
@@ -55,15 +62,13 @@ function setupClient(client) {
 
     return {
         ...client,
-        end: client.end.bind(client),
-        link,
         query,
     };
 }
 
 export const PgPool = (
-    { user, password, database, host, port },
-    config = { max: 10, idleTimeoutMillis: 30000 },
+    { user, password, database, host, port }: pg.ConnectionConfig,
+    config: pg.PoolConfig = { max: 10, idleTimeoutMillis: 30000 },
 ) => {
     const pool = new pg.Pool({
         database,
@@ -75,10 +80,8 @@ export const PgPool = (
         user,
     });
 
-    const connect = () => pool.connect().then(setupClient);
-
     return {
-        ...setupClient(pool),
-        connect,
+        ...pool,
+        connect: () => pool.connect().then(setupClient),
     };
 };
