@@ -26,7 +26,7 @@ export const selectByOrderedIdentifiers = ({
 FROM ${table}
 JOIN (
 VALUES ${values
-        .map((value, index) => `($${primaryKey}${index + 1}, ${index + 1})`)
+        .map((__, index) => `($${primaryKey}${index + 1}, ${index + 1})`)
         .join(', ')}
 ) AS x (${primaryKey}, ordering)
 ON ${table}.${primaryKey}::varchar=x.${primaryKey}

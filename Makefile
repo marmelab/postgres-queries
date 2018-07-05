@@ -7,7 +7,7 @@ install: ## Install Dependencies
 	yarn install
 
 test: ## Run Unit Tests
-	NODE_ENV=test ./node_modules/.bin/jest
+	NODE_ENV=test yarn test
 
 test-watch: ## Run Unit Tests Using Watch Mode
-	NODE_ENV=test ./node_modules/.bin/jest --watch
+	NODE_ENV=test yarn --watch

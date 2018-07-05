@@ -1,4 +1,4 @@
-import { AnyMap, Config, Query, StringMap } from '../../Configuration';
+import { AnyMap, Config, Query } from '../../Configuration';
 import { batchParameter } from '../../helpers/BatchParameter';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { valueSubQuery } from '../../helpers/ValueSubQuery';
@@ -26,7 +26,7 @@ export const batchInsert = ({
         const getValueSubQuery = valueSubQuery(writableCols);
 
         const values = rows
-            .map((row, index) => getValueSubQuery(index + 1))
+            .map((__, index) => getValueSubQuery(index + 1))
             .reduce((result, sqlString) => result.concat(`(${sqlString})`), [])
             .join(', ');
 

@@ -1,11 +1,17 @@
 {
-    "name": "postgres-queries-builder",
-    "version": "0.1.0",
-    "scripts": {
-        "build": "tsc --pretty"
-    },
-    "devDependencies": {
-        "@types/signale": "~1.2.0",
-        "signale": "~1.2.1"
-    }
+  "name": "@postgres-queries/builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "prepare": "tsc -p tsconfig.build.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@types/signale": "~1.2.0",
+    "signale": "~1.2.1"
+  }
 }

@@ -1,5 +1,12 @@
 {
     "private": true,
+    "scripts": {
+        "install": "lerna bootstrap",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "prepare": "lerna run prepare",
+        "clean": "rimraf packages/**/lib"
+    },
     "devDependencies": {
         "@types/jest": "23.1.1",
         "@types/node": "10.3.4",
@@ -7,6 +14,7 @@
         "jest": "23.1.0",
         "lerna": "2.11.0",
         "prettier": "1.13.5",
+        "rimraf": "2.6.2",
         "ts-jest": "22.4.6",
         "tslint": "5.10.0",
         "tslint-config-prettier": "1.13.0",

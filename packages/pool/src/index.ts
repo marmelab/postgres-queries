@@ -59,6 +59,7 @@ function setupClient(client: pg.PoolClient) {
 
     return {
         ...client,
+        link,
         namedQuery,
     };
 }

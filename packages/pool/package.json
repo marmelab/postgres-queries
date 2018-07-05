@@ -1,10 +1,16 @@
 {
-  "name": "postgres-queries-pool",
-  "version": "0.1.0",
+  "name": "@postgres-queries/pool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc --pretty"
+    "prepare": "tsc -p tsconfig.build.json"
   },
-  "devDependencies": {
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
     "@types/pg": "~7.4.9",
     "@types/signale": "~1.2.0",
     "pg": "~7.4.3",

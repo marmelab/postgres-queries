@@ -22,6 +22,8 @@
             true,
             "dev"
         ],
+        "no-switch-case-fall-through": true,
+        "no-unused-expression": true,
         "no-submodule-imports": false,
         "no-unused-variable": [true, {
             "check-parameters": true
