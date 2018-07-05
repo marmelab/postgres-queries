@@ -1,7 +1,6 @@
 {
     "private": true,
     "scripts": {
-        "install": "lerna bootstrap",
         "test": "jest",
         "test:watch": "jest --watch",
         "prepare": "lerna run prepare",

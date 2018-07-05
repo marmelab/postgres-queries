@@ -1,0 +1,17 @@
+{
+  "name": "postgres-querie",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "prepare": "tsc -p tsconfig.build.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@postgres-queries/builder": "^1.0.0",
+    "@postgres-queries/pool": "^1.0.0"
+  }
+}
