@@ -2,37 +2,40 @@ import * as pg from 'pg';
 import * as signale from 'signale';
 import { namedToNumericParameter } from './helpers';
 
-type QueryWithNamedParameters = (
-    queryTextOrConfig: string | pg.QueryConfig,
-    values?: any[],
-    returnOne?: boolean,
-) => Promise<pg.QueryResult>;
+interface QueryData {
+    sql: string;
+    parameters: object;
+    returnOne: boolean;
+}
+
+interface QueryData {
+    sql: string;
+    parameters: object;
+    returnOne: boolean;
+}
+
+type QueryWithNamedParameters = (queryData: QueryData) => Promise<any[] | null>;
 
 function setupClient(client: pg.PoolClient) {
-    const query: QueryWithNamedParameters = async (
-        named,
-        parameters = named.parameters,
-        returnOne = named.returnOne,
-    ) => {
-        const sql = typeof named === 'object' ? named.sql : named;
-
-        if (sql === null) {
+    const namedQuery: QueryWithNamedParameters = async queryData => {
+        if (queryData.sql === null) {
             throw new Error('sql cannot be null');
         }
 
-        if (sql === '') {
-            return returnOne ? null : [];
+        if (queryData.sql === '') {
+            return queryData.returnOne ? null : [];
         }
 
         const {
             sql: parsedSql,
             parameters: parsedParameters,
-        } = namedToNumericParameter(sql, parameters);
+        } = namedToNumericParameter(queryData.sql, queryData.parameters);
 
         const result = await client
             .query(parsedSql, parsedParameters)
             .then(queryResult => queryResult.rows);
-        if (returnOne && result.length > 1) {
+
+        if (queryData.returnOne && result.length > 1) {
             signale.warn(
                 `Query supposed to return only one result but got ${
                     result.length
@@ -40,11 +43,11 @@ function setupClient(client: pg.PoolClient) {
             );
         }
 
-        return returnOne ? result[0] : result;
+        return queryData.returnOne ? result[0] : result;
     };
 
     const linkOne = (querier: any) => (args: Iterable<object>) =>
-        query(querier(...args));
+        namedQuery(querier(...args));
 
     const link = querier => {
         if (typeof querier === 'function') {
@@ -54,7 +57,7 @@ function setupClient(client: pg.PoolClient) {
         return Object.keys(querier).reduce(
             (result, key) => ({
                 ...result,
-                [key]: linkOne(querier[key]), // Missing second argument key
+                [key]: linkOne({ ...querier[key], key }),
             }),
             {},
         );
@@ -62,7 +65,7 @@ function setupClient(client: pg.PoolClient) {
 
     return {
         ...client,
-        query,
+        namedQuery,
     };
 }
 

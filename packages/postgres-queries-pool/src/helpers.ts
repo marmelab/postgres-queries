@@ -2,7 +2,7 @@ const tokenPattern = /\$[a-zA-Z]([a-zA-Z0-9_]*)\b/g;
 
 interface ParameterizedQuery {
     sql: string;
-    parameters: object;
+    parameters: any[];
 }
 
 export const namedToNumericParameter = (
