@@ -1,7 +1,13 @@
 {
   "name": "postgres-queries-pool",
   "version": "0.1.0",
-  "dependencies": {
-    "pg": "~7.4.3"
+  "scripts": {
+    "build": "tsc --pretty"
+  },
+  "devDependencies": {
+    "@types/pg": "~7.4.9",
+    "@types/signale": "~1.2.0",
+    "pg": "~7.4.3",
+    "signale": "~1.2.1"
   }
 }
