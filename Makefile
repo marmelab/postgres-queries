@@ -11,3 +11,8 @@ test: ## Run Unit Tests
 
 test-watch: ## Run Unit Tests Using Watch Mode
 	NODE_ENV=test yarn --watch
+
+publish: ## Publish on npm
+	yarn clean
+	yarn prepare
+	./node_modules/.bin/lerna publish
