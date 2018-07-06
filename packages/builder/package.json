@@ -1,5 +1,5 @@
 {
-  "name": "postgres-queries",
+  "name": "@postgres-queries/builder",
   "version": "0.1.9",
   "description": "",
   "main": "lib/index.js",
@@ -11,7 +11,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@postgres-queries/builder": "^0.1.9",
-    "@postgres-queries/pool": "^0.1.9"
+    "@types/signale": "~1.2.0",
+    "signale": "~1.2.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,4 +1,4 @@
-import { AnyMap, Config, Query, StringMap } from '../../Configuration';
+import { AnyMap, Config, Query } from '../../Configuration';
 import { batchParameter } from '../../helpers/BatchParameter';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { valueSubQuery } from '../../helpers/ValueSubQuery';
