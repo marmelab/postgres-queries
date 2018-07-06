@@ -1,6 +1,6 @@
 {
   "name": "postgres-queries",
-  "version": "0.1.6",
+  "version": "0.1.0",
   "description": "",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@alexisjanvier/postgres-queries-builder": "^0.1.6",
-    "@alexisjanvier/postgres-queries-pool": "^0.1.6"
+    "@postgres-queries/builder": "^0.1.0",
+    "@postgres-queries/pool": "^0.1.0"
   }
 }

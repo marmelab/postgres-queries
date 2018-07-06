@@ -1,2 +1,2 @@
-export * from '@alexisjanvier/postgres-queries-builder';
-export * from '@alexisjanvier/postgres-queries-pool';
+export * from '@postgres-queries/builder';
+export * from '@postgres-queries/pool';
