@@ -106,7 +106,7 @@ export const getMatch = (filters, searchableCols, whereParts = []) => {
           );
 };
 
-export const getLike = (filters, _, whereParts = []) => {
+export const getLike = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -116,7 +116,7 @@ export const getLike = (filters, _, whereParts = []) => {
     );
 };
 
-export const getNotLike = (filters, _, whereParts = []) => {
+export const getNotLike = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -126,7 +126,7 @@ export const getNotLike = (filters, _, whereParts = []) => {
     );
 };
 
-export const getFrom = (filters, _, whereParts = []) => {
+export const getFrom = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -139,7 +139,7 @@ export const getFrom = (filters, _, whereParts = []) => {
     );
 };
 
-export const getTo = (filters, _, whereParts = []) => {
+export const getTo = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -152,7 +152,7 @@ export const getTo = (filters, _, whereParts = []) => {
     );
 };
 
-export const getNot = (filters, _, whereParts = []) => {
+export const getNot = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -166,7 +166,7 @@ export const getNot = (filters, _, whereParts = []) => {
     );
 };
 
-export const getQuery = (filters, _, whereParts = []) => {
+export const getQuery = (filters, searchableCols, whereParts = []) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -176,7 +176,7 @@ export const getQuery = (filters, _, whereParts = []) => {
     );
 };
 
-export const getResult = (_, __, whereParts = []) => {
+export const getResult = (filters, searchableCols, whereParts = []) => {
     return whereParts.length ? `WHERE ${whereParts.join(' AND ')}` : '';
 };
 

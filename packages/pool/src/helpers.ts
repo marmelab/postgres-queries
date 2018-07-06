@@ -31,7 +31,7 @@ export const namedToNumericParameter = (
         throw new Error(`Missing Parameters: ${unmatchedTokens.join(', ')}`);
     }
 
-    const sql = fillTokens.reduce((partiallyInterpolated, _, index) => {
+    const sql = fillTokens.reduce((partiallyInterpolated, token, index) => {
         const replaceAllPattern = new RegExp(`\\$${fillTokens[index]}\\b`, 'g');
 
         return partiallyInterpolated.replace(
