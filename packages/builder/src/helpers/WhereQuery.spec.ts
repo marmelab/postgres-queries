@@ -41,22 +41,22 @@ describe('whereQuery', () => {
             ),
         ).toEqual(
             [
-                'WHERE (column1::text ILIKE $match',
-                'OR column2::text ILIKE $match',
-                'OR column3::text ILIKE $match',
-                'OR column4::text ILIKE $match',
-                'OR column5::text ILIKE $match',
-                'OR table.column6::text ILIKE $match',
-                'OR column7::text ILIKE $match',
-                'OR column9::text ILIKE $match)',
-                'AND column3::timestamp >= $from_column3::timestamp',
-                'AND column2::timestamp <= $to_column2::timestamp',
-                'AND column5::text ILIKE $like_column5',
-                'AND column9::text NOT ILIKE $not_like_column9',
-                'AND column7 != $not_column7',
-                'AND column1 = $column1',
+                'WHERE column1 = $column1',
                 'AND column4 IN ($column41, $column42)',
+                'AND column3::timestamp >= $from_column3::timestamp',
+                'AND column5::text ILIKE $like_column5',
+                'AND (column1::text ILIKE $match',
+                    'OR column2::text ILIKE $match',
+                    'OR column3::text ILIKE $match',
+                    'OR column4::text ILIKE $match',
+                    'OR column5::text ILIKE $match',
+                    'OR table.column6::text ILIKE $match',
+                    'OR column7::text ILIKE $match',
+                    'OR column9::text ILIKE $match)',
+                'AND column7 != $not_column7',
+                'AND column9::text NOT ILIKE $not_like_column9',
                 'AND table.column6 = $table__column6',
+                'AND column2::timestamp <= $to_column2::timestamp',
             ].join(' '),
         );
     });
@@ -186,201 +186,107 @@ describe('whereQuery', () => {
                     },
                     ['column1', 'column2', 'column3', 'column4'],
                 ),
-            ).toEqual({
-                discarded: {
-                    column5: 6,
-                },
-                from: {
-                    from_column3: 3,
-                },
-                like: {
-                    like_column4: 4,
-                },
-                match: {
-                    match: 5,
-                },
-                query: {
-                    column1: 1,
-                },
-                to: {
-                    to_column2: 2,
-                },
-                not: {},
-                notLike: {}
-            });
+            ).toEqual([
+                { type: 'query', col: 'column1', value: 1 },
+                { type: 'discarded', col: 'column5', value: 6 },
+                { type: 'from', col: 'from_column3', value: 3 },
+                { type: 'like', col: 'like_column4', value: 4 },
+                { type: 'match', col: 'match', value: 5 },
+                { type: 'to', col: 'to_column2', value: 2 },
+
+            ]);
         });
     });
 
     describe('getMatch', () => {
         it('should return query and parameter to match a given value if match filter is given', () => {
-            const whereParts = getMatch(
-                {
-                    match: 'needle',
-                },
-                ['column1', 'column2', 'column3'],
-            );
+            const whereParts = getMatch('match', 'needle', ['column1', 'column2', 'column3']);
 
-            expect(whereParts).toEqual([
+            expect(whereParts).toEqual(
                 '(column1::text ILIKE $match OR column2::text ILIKE $match OR column3::text ILIKE $match)',
-            ]);
+            );
         });
 
         it('should return passed result if there is no searchableCols', () => {
-            const whereParts = getMatch(
-                {
-                    match: 'needle',
-                },
-                [],
-            );
+            const whereParts = getMatch('match', 'needle', []);
 
-            expect(whereParts).toEqual([]);
+            expect(whereParts).toEqual(null);
         });
     });
 
     describe('getFrom', () => {
         it('should return query and parameter to test for date after column value if given column starting with from_', () => {
-            const whereParts = getFrom(
-                {
-                    from_date: 'date',
-                },
-                ['column', 'date'],
-            );
+            const whereParts = getFrom('from_date', 'date', ['column', 'date']);
 
-            expect(whereParts).toEqual([
-                'date::timestamp >= $from_date::timestamp',
-            ]);
+            expect(whereParts).toEqual('date::timestamp >= $from_date::timestamp');
         });
 
         it('should work with several column starting with from_', () => {
-            const whereParts = getFrom(
-                {
-                    from_birth: 'date2',
-                    from_date: 'date1',
-                },
-                ['column', 'date', 'birth'],
-            );
+            const whereParts = getFrom('from_birth', 'date', ['column', 'date', 'birth']);
 
-            expect(whereParts).toEqual([
+            expect(whereParts).toEqual(
                 'birth::timestamp >= $from_birth::timestamp',
-                'date::timestamp >= $from_date::timestamp',
-            ]);
+            );
         });
     });
 
     describe('getTo', () => {
         it('should return query and parameter to test for date after column value if given column starting with to_', () => {
-            const whereParts = getTo(
-                {
-                    to_date: 'date',
-                },
-                ['column', 'date'],
-            );
+            const whereParts = getTo('to_date', 'date', ['column', 'date']);
 
-            expect(whereParts).toEqual([
+            expect(whereParts).toEqual(
                 'date::timestamp <= $to_date::timestamp',
-            ]);
+            );
         });
 
         it('should work with several column starting with to_', () => {
-            const whereParts = getTo(
-                {
-                    to_birth: 'date2',
-                    to_date: 'date1',
-                },
-                ['column', 'date', 'birth'],
-            );
+            const whereParts = getTo('to_birth', 'date', ['column', 'date', 'birth']);
 
-            expect(whereParts).toEqual([
+            expect(whereParts).toEqual(
                 'birth::timestamp <= $to_birth::timestamp',
-                'date::timestamp <= $to_date::timestamp',
-            ]);
+            );
         });
     });
 
     describe('getLike', () => {
         it('should return query and parameter to test column like value if given column starting with like_', () => {
-            const whereParts = getLike(
-                {
-                    like_column: 'pattern',
-                },
-                ['column'],
-            );
+            const whereParts = getLike('like_column', 'pattern', ['column']);
 
-            expect(whereParts).toEqual(['column::text ILIKE $like_column']);
+            expect(whereParts).toEqual('column::text ILIKE $like_column');
         });
     });
 
     describe('getNotLike', () => {
         it('should return query and parameter to test column not like value if given column starting with not_like_', () => {
-            const whereParts = getNotLike(
-                {
-                    not_like_column: 'pattern',
-                },
-                ['column'],
-            );
+            const whereParts = getNotLike('not_like_column', 'pattern', ['column']);
 
-            expect(whereParts).toEqual([
+            expect(whereParts).toEqual(
                 'column::text NOT ILIKE $not_like_column',
-            ]);
+            );
         });
     });
 
     describe('getNot', () => {
         it('should return query and parameter to test column not equal to value if given column starting with not_', () => {
-            const whereParts = getNot(
-                {
-                    not_column: 'not me',
-                },
-                ['column'],
-            );
+            const whereParts = getNot('not_column', 'not me', ['column']);
 
-            expect(whereParts).toEqual(['column != $not_column']);
+            expect(whereParts).toEqual('column != $not_column');
         });
     });
 
     describe('getQuery', () => {
         it('should return query and parameter for parameter in searchableCols', () => {
-            const whereParts = getQuery(
-                {
-                    column1: 1,
-                    column2: 2,
-                    column3: 3,
-                },
-                ['column1', 'column2', 'column3'],
+            const whereParts = getQuery('column', 'value',
+                ['column', 'column2', 'column3'],
             );
 
-            expect(whereParts).toEqual([
-                'column1 = $column1',
-                'column2 = $column2',
-                'column3 = $column3',
-            ]);
+            expect(whereParts).toEqual('column = $column');
         });
 
         it('should return replace "." in column name by "__" for parameter name', () => {
-            const whereParts = getQuery(
-                {
-                    'table.column1': 1,
-                    'table.column2': 2,
-                    'table.column3': 3,
-                },
-                ['table.column1', 'table.column2', 'table.column3'],
-            );
+            const whereParts = getQuery('table.column': 'value', ['table.column1', 'table.column2', 'table.column3']);
 
-            expect(whereParts).toEqual([
-                'table.column1 = $table__column1',
-                'table.column2 = $table__column2',
-                'table.column3 = $table__column3',
-            ]);
-        });
-
-        it('should return passed result if no filter is given', () => {
-            const whereParts = getQuery(
-                {},
-                ['column1', 'column2', 'column3'],
-                ['column1 = $column1'],
-            );
-
-            expect(whereParts).toEqual(['column1 = $column1']);
+            expect(whereParts).toEqual('table.column = $table__column');
         });
     });
 });

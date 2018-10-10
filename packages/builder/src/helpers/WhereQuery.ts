@@ -1,5 +1,6 @@
 import * as signale from 'signale';
 import Reader from '../utils/Reader';
+import Writer from '../utils/Writer';
 
 export const getColPlaceHolder = (column, value, not) => {
     const normalizedColumn = column.replace('.', '__');
@@ -76,125 +77,79 @@ export const getColType = (column, searchableCols) => {
 };
 
 export const sortQueryType = (filters, searchableCols) => {
-    return Object.keys(filters).reduce(
-        (result, col) => {
-            const colType = getColType(col, searchableCols);
+    return Object.keys(filters).map(col => {
+        const type = getColType(col, searchableCols);
 
-            return {
-                ...result,
-                [colType]: { ...result[colType], [col]: filters[col] },
-            };
-        },
-        { match: {}, from: {}, to: {}, query: {}, like: {}, notLike: {}, not: {} },
-    );
+        return {
+            type,
+            col,
+            value: filters[col],
+        };
+    });
 };
 
-export const getMatch = (filters, searchableCols) => {
+export const getMatch = (col, value, searchableCols) => {
     return !searchableCols.length
-        ? []
-        : Object.keys(filters).reduce(
-              result => [
-                  ...result,
-                  `(${searchableCols
-                      .map(
-                          searchableCol =>
-                              `${searchableCol}::text ILIKE $match`,
-                      )
-                      .join(' OR ')})`,
-              ],
-              [],
-          );
+        ? null
+        : `(${searchableCols.map(searchableCol => `${searchableCol}::text ILIKE $match`).join(' OR ')})`;
 };
 
-export const getLike = (filters, searchableCols) => {
-    return Object.keys(filters).reduce(
-        (result, column) => [
-            ...result,
-            `${column.substr(5)}::text ILIKE $${column.replace('.', '__')}`,
-        ],
-        [],
-    );
+export const getLike = (col, value, searchableCols) => {
+    return `${col.substr(5)}::text ILIKE $${col.replace('.', '__')}`;
 };
 
-export const getNotLike = (filters, searchableCols) => {
-    return Object.keys(filters).reduce(
-        (result, column) => [
-            ...result,
-            `${column.substr(9)}::text NOT ILIKE $${column.replace('.', '__')}`,
-        ],
-        [],
-    );
+export const getNotLike = (col, value, searchableCols) => {
+    return `${col.substr(9)}::text NOT ILIKE $${col.replace('.', '__')}`;
 };
 
-export const getFrom = (filters, searchableCols) => {
-    return Object.keys(filters).reduce(
-        (result, column) => [
-            ...result,
-            `${column.substr(5)}::timestamp >= $${column.replace(
-                '.',
-                '__',
-            )}::timestamp`,
-        ],
-        [],
-    );
+export const getFrom = (col, value, searchableCols) => {
+    return `${col.substr(5)}::timestamp >= $${col.replace(
+        '.',
+        '__',
+    )}::timestamp`;
 };
 
-export const getTo = (filters, searchableCols) => {
-    return Object.keys(filters).reduce(
-        (result, column) => [
-            ...result,
-            `${column.substr(3)}::timestamp <= $${column.replace(
-                '.',
-                '__',
-            )}::timestamp`,
-        ],
-        [],
-    );
+export const getTo = (col, value, searchableCols) => {
+    return `${col.substr(3)}::timestamp <= $${col.replace(
+        '.',
+        '__',
+    )}::timestamp`;
 };
 
-export const getNot = (filters, searchableCols) => {
-    return Object.keys(filters).reduce(
-        (result, column) => [
-            ...result,
-            `${column.substr(4)} ${getColPlaceHolder(
-                column,
-                filters[column],
-                true,
-            )}`,
-        ],
-        [],
-    );
+export const getNot = (col, value, searchableCols) => {
+    return `${col.substr(4)} ${getColPlaceHolder(
+        col,
+        value,
+        true,
+    )}`;
 };
-
-export const getQuery = (filters, searchableCols, whereParts = []) => {
-    return Object.keys(filters).reduce(
-        (result, column) => [
-            ...result,
-            `${column} ${getColPlaceHolder(column, filters[column], false)}`,
-        ],
-        whereParts,
-    );
+export const getQuery = (col, value, searchableCols) => {
+    return `${col} ${getColPlaceHolder(col, value, false)}`;
 };
 
 export const getResult = (whereParts = []) => {
     return whereParts.length ? `WHERE ${whereParts.join(' AND ')}` : '';
 };
 
-
-
-const getFilterFor = (key, fn) => whereParts => new Reader((context) => [...whereParts, ...fn(context[key], context.searchableCols) ]);
+const wherePartsBuilder = {
+    match: getMatch,
+    from: getFrom,
+    to: getTo,
+    like: getLike,
+    notLike: getNotLike,
+    not: getNot,
+    query: getQuery,
+}
 
 export const whereQuery = (filters, searchableCols) => {
     const filtersByType = sortQueryType(filters, searchableCols);
 
-    return Reader.of([])
-        .chain(getFilterFor('match', getMatch))
-        .chain(getFilterFor('from', getFrom))
-        .chain(getFilterFor('to', getTo))
-        .chain(getFilterFor('like', getLike))
-        .chain(getFilterFor('notLike', getNotLike))
-        .chain(getFilterFor('not', getNot))
-        .chain(getFilterFor('query', getQuery))
-        .map(getResult)
-        .run({ ...filtersByType, searchableCols });
+    const wherParts = filtersByType.map(({ type, col, value }) => {
+        const getPart = wherePartsBuilder[type];
+
+        return getPart ? getPart(col, value, searchableCols) : undefined;
+    })
+    .filter(v => v);
+
+    return getResult(wherParts);
 };

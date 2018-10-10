@@ -77,7 +77,7 @@ SELECT column1, column2 FROM table1 JOIN table2 ON table1.table2_id table2.id
         });
 
         expect(sql).toEqual(
-            'SELECT column1, column2, column3 FROM table WHERE column3::text NOT ILIKE $not_like_column3 AND column1 = $column1 AND column2 = $column2 ORDER BY id ASC',
+            'SELECT column1, column2, column3 FROM table WHERE column1 = $column1 AND column2 = $column2 AND column3::text NOT ILIKE $not_like_column3 ORDER BY id ASC',
         );
 
         expect(parameters).toEqual({
