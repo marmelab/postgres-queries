@@ -15,7 +15,10 @@ export default class Reader {
     run(context) {
         return this.computation(context);
     }
+    flatten() {
+        return new Reader(context => this.computation(context).run(context));
+    }
     chain(fn) {
-        return new Reader(context => fn(this.computation(context)).run(context));
+        return this.map(fn).flatten();
     }
 }
