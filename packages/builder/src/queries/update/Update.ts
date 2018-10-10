@@ -1,3 +1,5 @@
+import * as signale from 'signale';
+
 import { AnyMap, Config, Query, StringMap } from '../../Configuration';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
@@ -48,7 +50,8 @@ export const update = (
             ...addSuffix(updateParameters, '_u'),
         };
 
-        const where = whereQuery(filters, filterCols);
+        const { value: where, log } = whereQuery(filters, filterCols).read();
+        log.map(signale.debug);
 
         const setQuery = writableCols
             .filter(column => typeof updateParameters[column] !== 'undefined')

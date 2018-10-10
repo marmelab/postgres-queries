@@ -18,15 +18,16 @@ describe('whereQuery', () => {
             whereQuery(
                 {
                     column1: 1,
-                    column4: ['some value', 'other value'],
-                    column8: 'ignored',
-                    from_column3: new Date(800),
-                    like_column5: 'contain',
-                    match: '%6%',
-                    not_column7: 'different',
-                    not_like_column9: 'not contain',
-                    'table.column6': 'complex',
                     to_column2: new Date(500),
+                    from_column3: new Date(800),
+                    column4: ['some value', 'other value'],
+                    like_column5: 'contain',
+                    'table.column6': 'complex',
+                    not_column7: 'different',
+                    column8: 'ignored',
+                    not_like_column9: 'not contain',
+                    match: '%6%',
+                    ignored: 'ignored too',
                 },
                 [
                     'column1',
@@ -39,12 +40,16 @@ describe('whereQuery', () => {
                     'column9',
                 ],
             ),
-        ).toEqual(
-            [
+        ).toEqual({
+            value: [
                 'WHERE column1 = $column1',
-                'AND column4 IN ($column41, $column42)',
+                'AND column2::timestamp <= $to_column2::timestamp',
                 'AND column3::timestamp >= $from_column3::timestamp',
+                'AND column4 IN ($column41, $column42)',
                 'AND column5::text ILIKE $like_column5',
+                'AND table.column6 = $table__column6',
+                'AND column7 != $not_column7',
+                'AND column9::text NOT ILIKE $not_like_column9',
                 'AND (column1::text ILIKE $match',
                     'OR column2::text ILIKE $match',
                     'OR column3::text ILIKE $match',
@@ -53,12 +58,40 @@ describe('whereQuery', () => {
                     'OR table.column6::text ILIKE $match',
                     'OR column7::text ILIKE $match',
                     'OR column9::text ILIKE $match)',
-                'AND column7 != $not_column7',
-                'AND column9::text NOT ILIKE $not_like_column9',
-                'AND table.column6 = $table__column6',
-                'AND column2::timestamp <= $to_column2::timestamp',
             ].join(' '),
-        );
+            log: [{
+                type: 'ignoring',
+                message: 'Ignoring columns: [column8, ignored]. Allowed columns: [column1, column2, column3, column4, column5, table.column6, column7, column9]'
+            }],
+        });
+    });
+
+
+    it('should return no whereQuery when no searchableColumn', () => {
+        expect(
+            whereQuery(
+                {
+                    column1: 1,
+                    to_column2: new Date(500),
+                    from_column3: new Date(800),
+                    column4: ['some value', 'other value'],
+                    like_column5: 'contain',
+                    'table.column6': 'complex',
+                    not_column7: 'different',
+                    column8: 'ignored',
+                    not_like_column9: 'not contain',
+                    match: '%6%',
+                    ignored: 'ignored too',
+                },
+                [],
+            ),
+        ).toEqual({
+            value:'',
+            log: [{
+                message: 'There are no allowed columns, all columns will be ignored',
+                type: 'no searchable',
+            }],
+        });
     });
 
     describe('getColPlaceHolder', () => {
@@ -146,7 +179,7 @@ describe('whereQuery', () => {
         it('should return discarded if col is match but searchableCols is empty', () => {
             expect(getColType('match', [])).toEqual({
                 value: 'discarded',
-                log: [{ type: 'no searchable', message: 'There are no allowed columns to be searched, all filters will be ignored' }],
+                log: [{ type: 'no searchable', message: 'There are no allowed columns, all columns will be ignored' }],
             });
         });
 

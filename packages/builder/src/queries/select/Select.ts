@@ -1,3 +1,5 @@
+import * as signale from 'signale';
+
 import { AnyMap, Config, Query, SortDir, StringMap } from '../../Configuration';
 import { sanitizeParameter } from '../../helpers/SanitizeParameter';
 import { whereQuery } from '../../helpers/WhereQuery';
@@ -50,7 +52,8 @@ export const select = ({
             ...Object.keys(permanentFilters),
         ];
 
-        const where = whereQuery(finalFilters, finalSearchableCols);
+        const { value: where, log } = whereQuery(finalFilters, finalSearchableCols).read();
+        log.map(signale.warn);
 
         let sql = `SELECT ${select} FROM ${table} ${where}`;
 

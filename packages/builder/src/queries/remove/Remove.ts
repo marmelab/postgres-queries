@@ -1,3 +1,5 @@
+import * as signale from 'signale';
+
 import { Config, Query, StringMap } from '../../Configuration';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
@@ -33,7 +35,8 @@ export const remove = (
             ? sanitizeIdentifier(finalFilterCols, finalIdentifiers)
             : sanitizeParameter(finalFilterCols, finalIdentifiers);
 
-        const where = whereQuery(parameters, finalFilterCols);
+        const { value: where, log } = whereQuery(parameters, finalFilterCols).read();
+        log.map(signale.debug);
         const sql = `DELETE FROM ${table} ${where} ${returning}`;
 
         return {

@@ -26,8 +26,8 @@ export const getColType = (column, searchableCols) => {
     if (!searchableCols.length) {
         return new Writer('discarded', [{
             type: 'no searchable',
-            message: 'There are no allowed columns to be searched, all filters will be ignored' },
-        ]);
+            message: 'There are no allowed columns, all columns will be ignored'
+        }]);
     }
     if (column === 'match' && searchableCols.length > 0) {
         return Writer.of('match');
@@ -135,6 +135,12 @@ const wherePartsBuilder = {
 }
 
 export const whereQuery = (filters, searchableCols) => {
+    if (!searchableCols.length) {
+        return new Writer('', [{
+            type: 'no searchable',
+            message: 'There are no allowed columns, all columns will be ignored'
+        }])
+    }
     const filtersByType = sortQueryType(filters, searchableCols);
 
     const { value: whereParts, log } = filtersByType
@@ -150,15 +156,12 @@ export const whereQuery = (filters, searchableCols) => {
 
     const ignoredColumns = log.filter(({ type }) => type === 'ignoring');
 
-    if (ignoredColumns.length) {
-        signale.warn(`Ignoring columns: [${
-            ignoredColumns.map(({ message }) => message).join(', ')
-        }]. Allowed columns: [${searchableCols.join(', ')}]`);
-    }
-
     log.filter(({ type }) => type === 'warn').map(({ message }) => signale.warn(message));
 
-    log.find(({ type }) => type === 'no searchable');
-
-    return getResult(whereParts);
+    return new Writer(getResult(whereParts), [
+        ignoredColumns.length && { type: 'ignoring', message:  `Ignoring columns: [${
+            ignoredColumns.map(({ message }) => message).join(', ')
+        }]. Allowed columns: [${searchableCols.join(', ')}]`},
+        log.find(({ type }) => type === 'no searchable'),
+    ].filter(v => v));
 };
