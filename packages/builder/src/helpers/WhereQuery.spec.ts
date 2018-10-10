@@ -63,30 +63,41 @@ describe('whereQuery', () => {
 
     describe('getColPlaceHolder', () => {
         it('should return value if value is IS_NULL or IS_NOT_NULL', () => {
-            expect(getColPlaceHolder('colName', 'IS_NULL')).toEqual('IS_NULL');
-            expect(getColPlaceHolder('colName', 'IS NULL')).toEqual('IS NULL');
-            expect(getColPlaceHolder('colName', 'IS_NOT_NULL')).toEqual(
-                'IS_NOT_NULL',
-            );
-            expect(getColPlaceHolder('colName', 'IS NOT NULL')).toEqual(
-                'IS NOT NULL',
-            );
+            expect(getColPlaceHolder('colName', 'IS_NULL')).toEqual({
+                value: 'IS_NULL',
+                log: ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed'],
+            });
+            expect(getColPlaceHolder('colName', 'IS NULL')).toEqual({
+                value: 'IS NULL',
+                log: ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed'],
+            });
+            expect(getColPlaceHolder('colName', 'IS_NOT_NULL')).toEqual({
+                value: 'IS_NOT_NULL',
+                log: ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed'],
+            });
+            expect(getColPlaceHolder('colName', 'IS NOT NULL')).toEqual({
+                value: 'IS NOT NULL',
+                log: ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed'],
+            });
         });
 
         it('should return IS NULL if value is null', () => {
-            expect(getColPlaceHolder('colName', null)).toEqual('IS NULL');
+            expect(getColPlaceHolder('colName', null)).toEqual({
+                value: 'IS NULL',
+                log: [],
+            });
         });
 
         it('should return IS NOT NULL if value is null and not is true', () => {
-            expect(getColPlaceHolder('colName', null, true)).toEqual(
-                'IS NOT NULL',
-            );
+            expect(getColPlaceHolder('colName', null, true)).toEqual({
+                value: 'IS NOT NULL',
+                log: [],
+            });
         });
 
         it('should return IN query if value is an array', () => {
-            expect(
-                getColPlaceHolder('colName', ['some value', 'other value']),
-            ).toEqual('IN ($colName1, $colName2)');
+            expect(getColPlaceHolder('colName', ['some value', 'other value']))
+                .toEqual({ value: 'IN ($colName1, $colName2)', log: [] });
         });
 
         it('should return NOT IN query if value is an array and not is true', () => {
@@ -96,19 +107,24 @@ describe('whereQuery', () => {
                     ['some value', 'other value'],
                     true,
                 ),
-            ).toEqual('NOT IN ($colName1, $colName2)');
+            ).toEqual({
+                value: 'NOT IN ($colName1, $colName2)',
+                log: [],
+            });
         });
 
         it('should return != $colName if not is true', () => {
-            expect(getColPlaceHolder('colName', 'some value', true)).toEqual(
-                '!= $colName',
-            );
+            expect(getColPlaceHolder('colName', 'some value', true)).toEqual({
+                value: '!= $colName',
+                log: [],
+            });
         });
 
         it('should return = $colName otherwise', () => {
-            expect(getColPlaceHolder('colName', 'some value')).toEqual(
-                '= $colName',
-            );
+            expect(getColPlaceHolder('colName', 'some value')).toEqual({
+                value: '= $colName',
+                log: [],
+            });
         });
     });
 
@@ -294,7 +310,7 @@ describe('whereQuery', () => {
         it('should return query and parameter to test column not equal to value if given column starting with not_', () => {
             const whereParts = getNot('not_column', 'not me', ['column']);
 
-            expect(whereParts).toEqual('column != $not_column');
+            expect(whereParts).toEqual({ value: 'column != $not_column', log: [] });
         });
     });
 
@@ -304,13 +320,13 @@ describe('whereQuery', () => {
                 ['column', 'column2', 'column3'],
             );
 
-            expect(whereParts).toEqual('column = $column');
+            expect(whereParts).toEqual({ value: 'column = $column', log: [] });
         });
 
         it('should return replace "." in column name by "__" for parameter name', () => {
-            const whereParts = getQuery('table.column': 'value', ['table.column1', 'table.column2', 'table.column3']);
+            const whereParts = getQuery('table.column', 'value', ['table.column1', 'table.column2', 'table.column3']);
 
-            expect(whereParts).toEqual('table.column = $table__column');
+            expect(whereParts).toEqual({ value: 'table.column = $table__column', log: []});
         });
     });
 });

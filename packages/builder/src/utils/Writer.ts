@@ -4,6 +4,9 @@ export default class Writer {
     static of(value) {
         return new Writer(value, []);
     }
+    static lift(fn) {
+        return (...args) => Writer.of(fn(...args));
+    }
     constructor(value, log = []) {
         this.value = value;
         this.log = log;

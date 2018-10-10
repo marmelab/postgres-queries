@@ -2,26 +2,23 @@ import * as signale from 'signale';
 import Reader from '../utils/Reader';
 import Writer from '../utils/Writer';
 
-export const getColPlaceHolder = (column, value, not) => {
+export const getColPlaceHolder = (column, value: any, not: boolean | null = false) => {
     const normalizedColumn = column.replace('.', '__');
     const type = Array.isArray(value) ? 'IN' : value;
     switch (type) {
         case null:
-            return `IS ${not ? 'NOT ' : ''}NULL`;
+            return Writer.of(`IS ${not ? 'NOT ' : ''}NULL`);
         case 'IS_NULL':
         case 'IS NULL':
         case 'IS_NOT_NULL':
         case 'IS NOT NULL':
-            signale.warn(
-                'Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed',
-            );
-            return value;
+            return new Writer(value, ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed']);
         case 'IN':
-            return `${not ? 'NOT ' : ''}IN (${value
+            return Writer.of(`${not ? 'NOT ' : ''}IN (${value
                 .map((_, index) => `$${normalizedColumn}${index + 1}`)
-                .join(', ')})`;
+                .join(', ')})`);
         default:
-            return `${not ? '!=' : '='} $${normalizedColumn}`;
+            return Writer.of(`${not ? '!=' : '='} $${normalizedColumn}`);
     }
 };
 
@@ -110,14 +107,14 @@ export const getTo = (col, value, searchableCols) => {
 };
 
 export const getNot = (col, value, searchableCols) => {
-    return `${col.substr(4)} ${getColPlaceHolder(
+    return getColPlaceHolder(
         col,
         value,
         true,
-    )}`;
+    ).map(value => `${col.substr(4)} ${value}`);
 };
 export const getQuery = (col, value, searchableCols) => {
-    return `${col} ${getColPlaceHolder(col, value, false)}`;
+    return getColPlaceHolder(col, value, false).map(value => `${col} ${value}`);
 };
 
 export const getResult = (whereParts = []) => {
@@ -125,11 +122,11 @@ export const getResult = (whereParts = []) => {
 };
 
 const wherePartsBuilder = {
-    match: getMatch,
-    from: getFrom,
-    to: getTo,
-    like: getLike,
-    notLike: getNotLike,
+    match: Writer.lift(getMatch),
+    from: Writer.lift(getFrom),
+    to: Writer.lift(getTo),
+    like: Writer.lift(getLike),
+    notLike: Writer.lift(getNotLike),
     not: getNot,
     query: getQuery,
 }
@@ -138,16 +135,17 @@ export const whereQuery = (filters, searchableCols) => {
     const filtersByType = sortQueryType(filters, searchableCols);
 
     const { value: whereParts, log } = filtersByType
-        .map(writer => writer.map(({ type, col, value }) => {
+        .map(writer => writer.chain(({ type, col, value }) => {
             const getPart = wherePartsBuilder[type];
 
-            return getPart ? getPart(col, value, searchableCols) : undefined;
+            return getPart ? getPart(col, value, searchableCols) : Writer.of(undefined);
         }).read())
         .reduce((result, { value, log }) => ({
             value: value ? [...result.value, value] : result.value,
             log: [...result.log, ...log],
         }), { value: [], log: [] });
 
+    log.map(signale.warn);
 
     return getResult(whereParts);
 };
