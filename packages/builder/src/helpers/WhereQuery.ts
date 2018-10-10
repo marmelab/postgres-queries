@@ -27,64 +27,57 @@ export const getColPlaceHolder = (column, value, not) => {
 
 export const getColType = (column, searchableCols) => {
     if (!searchableCols.length) {
-        signale.warn(
-            'There are no allowed columns to be searched, all filters will be ignored',
-        );
-        return 'discarded';
+        return new Writer('discarded', ['There are no allowed columns to be searched, all filters will be ignored']);
     }
     if (column === 'match' && searchableCols.length > 0) {
-        return 'match';
+        return Writer.of('match');
     }
     if (searchableCols.indexOf(column) !== -1) {
-        return 'query';
+        return Writer.of('query');
     }
     if (
         column.indexOf('not_') === 0 &&
         searchableCols.indexOf(column.substr(4)) !== -1
     ) {
-        return 'not';
+        return Writer.of('not');
     }
     if (
         column.indexOf('from_') === 0 &&
         searchableCols.indexOf(column.substr(5)) !== -1
     ) {
-        return 'from';
+        return Writer.of('from');
     }
     if (
         column.indexOf('to_') === 0 &&
         searchableCols.indexOf(column.substr(3)) !== -1
     ) {
-        return 'to';
+        return Writer.of('to');
     }
     if (
         column.indexOf('like_') === 0 &&
         searchableCols.indexOf(column.substr(5)) !== -1
     ) {
-        return 'like';
+        return Writer.of('like');
     }
     if (
         column.indexOf('not_like_') === 0 &&
         searchableCols.indexOf(column.substr(9)) !== -1
     ) {
-        return 'notLike';
+        return Writer.of('notLike');
     }
 
-    signale.warn(
-        `Ignoring filter: ${column}. Allowed columns: ${searchableCols}`,
-    );
-
-    return 'discarded';
+    return new Writer('discarded', [`Ignoring column: ${column}. Allowed columns: ${searchableCols}`]);
 };
 
 export const sortQueryType = (filters, searchableCols) => {
     return Object.keys(filters).map(col => {
-        const type = getColType(col, searchableCols);
+        const typeWriter = getColType(col, searchableCols);
 
-        return {
+        return typeWriter.map(type => ({
             type,
             col,
             value: filters[col],
-        };
+        }));
     });
 };
 
@@ -144,12 +137,17 @@ const wherePartsBuilder = {
 export const whereQuery = (filters, searchableCols) => {
     const filtersByType = sortQueryType(filters, searchableCols);
 
-    const wherParts = filtersByType.map(({ type, col, value }) => {
-        const getPart = wherePartsBuilder[type];
+    const { value: whereParts, log } = filtersByType
+        .map(writer => writer.map(({ type, col, value }) => {
+            const getPart = wherePartsBuilder[type];
 
-        return getPart ? getPart(col, value, searchableCols) : undefined;
-    })
-    .filter(v => v);
+            return getPart ? getPart(col, value, searchableCols) : undefined;
+        }).read())
+        .reduce((result, { value, log }) => ({
+            value: value ? [...result.value, value] : result.value,
+            log: [...result.log, ...log],
+        }), { value: [], log: [] });
 
-    return getResult(wherParts);
+
+    return getResult(whereParts);
 };

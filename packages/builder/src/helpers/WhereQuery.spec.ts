@@ -114,61 +114,85 @@ describe('whereQuery', () => {
 
     describe('getColType', () => {
         it('should return query, if column is in searchableCol', () => {
-            expect(getColType('col', ['col'])).toEqual('query');
+            expect(getColType('col', ['col'])).toEqual({
+                value: 'query',
+                log: [],
+            });
         });
 
         it('should return match, if col is match and searchableCols contain at least one element', () => {
-            expect(getColType('match', ['col'])).toEqual('match');
+            expect(getColType('match', ['col'])).toEqual({
+                value: 'match',
+                log: [],
+            });
         });
 
         it('should return discarded if col is match but searchableCols is empty', () => {
-            expect(getColType('match', [])).toEqual('discarded');
+            expect(getColType('match', [])).toEqual({
+                value: 'discarded',
+                log: ['There are no allowed columns to be searched, all filters will be ignored'],
+            });
         });
 
         it('should return discarded if col is not in searchableCols', () => {
-            expect(getColType('needle', ['haystack'])).toEqual('discarded');
+            expect(getColType('needle', ['haystack'])).toEqual({
+                value: 'discarded',
+                log: ['Ignoring column: needle. Allowed columns: haystack'],
+            });
         });
 
         it('should return to if column is suffixed by to and is in searchableCols', () => {
-            expect(getColType('to_column', ['column'])).toEqual('to');
+            expect(getColType('to_column', ['column'])).toEqual({
+                value: 'to',
+                log: [],
+            });
         });
 
         it('should return discarded if column is suffixed by to but is not in searchableCols', () => {
-            expect(getColType('to_column', ['other_column'])).toEqual(
-                'discarded',
-            );
+            expect(getColType('to_column', ['other_column'])).toEqual({
+                value: 'discarded',
+                log: ['Ignoring column: to_column. Allowed columns: other_column'],
+            });
         });
 
         it('should return from if column is suffixed by from and is in searchableCols', () => {
-            expect(getColType('from_column', ['column'])).toEqual('from');
+            expect(getColType('from_column', ['column'])).toEqual({
+                value: 'from', log: [] });
         });
 
         it('should return discarded if column is suffixed by from but is not in searchableCols', () => {
-            expect(getColType('from_column', ['other_column'])).toEqual(
-                'discarded',
-            );
+            expect(getColType('from_column', ['other_column'])).toEqual({
+                value: 'discarded',
+                log: ['Ignoring column: from_column. Allowed columns: other_column'],
+            });
         });
 
         it('should return like if column is suffixed by like and is in searchableCols', () => {
-            expect(getColType('like_column', ['column'])).toEqual('like');
+            expect(getColType('like_column', ['column'])).toEqual({
+                value: 'like',
+                log: [],
+            });
         });
 
         it('should return discarded if column is suffixed by like but is not in searchableCols', () => {
-            expect(getColType('like_column', ['other_column'])).toEqual(
-                'discarded',
-            );
+            expect(getColType('like_column', ['other_column'])).toEqual({
+                value: 'discarded',
+                log: ['Ignoring column: like_column. Allowed columns: other_column'],
+            });
         });
 
         it('should return not like if column is suffixed by not_like and is in searchableCols', () => {
-            expect(getColType('not_like_column', ['column'])).toEqual(
-                'notLike',
-            );
+            expect(getColType('not_like_column', ['column'])).toEqual({
+                value: 'notLike',
+                log: [],
+            });
         });
 
         it('should return discarded if column is suffixed by not_like but is not in searchableCols', () => {
-            expect(getColType('not_like_column', ['other_column'])).toEqual(
-                'discarded',
-            );
+            expect(getColType('not_like_column', ['other_column'])).toEqual({
+                log: ['Ignoring column: not_like_column. Allowed columns: other_column'],
+                value: 'discarded',
+            });
         });
     });
 
@@ -185,14 +209,14 @@ describe('whereQuery', () => {
                         to_column2: 2,
                     },
                     ['column1', 'column2', 'column3', 'column4'],
-                ),
+                ).map(w => w.read()),
             ).toEqual([
-                { type: 'query', col: 'column1', value: 1 },
-                { type: 'discarded', col: 'column5', value: 6 },
-                { type: 'from', col: 'from_column3', value: 3 },
-                { type: 'like', col: 'like_column4', value: 4 },
-                { type: 'match', col: 'match', value: 5 },
-                { type: 'to', col: 'to_column2', value: 2 },
+                { log: [], value: { type: 'query', col: 'column1', value: 1 }},
+                { log: ['Ignoring column: column5. Allowed columns: column1,column2,column3,column4'], value: { type: 'discarded', col: 'column5', value: 6 } },
+                { log: [], value: { type: 'from', col: 'from_column3', value: 3 } },
+                { log: [], value: { type: 'like', col: 'like_column4', value: 4 } },
+                { log: [], value: { type: 'match', col: 'match', value: 5 } },
+                { log: [], value: { type: 'to', col: 'to_column2', value: 2 } },
 
             ]);
         });
