@@ -17,6 +17,9 @@ export default class Writer {
     map(fn) {
         return new Writer(fn(this.value), this.log);
     }
+    ap(other) {
+        return this.chain(fn => other.map(fn));
+    }
     chain(fn) {
         const inner = fn(this.value).read();
         return new Writer(inner.value, this.log.concat(inner.log));

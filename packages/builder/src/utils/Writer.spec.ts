@@ -41,7 +41,7 @@ describe('Writer', () => {
         );
     });
 
-    it('should allow to augment log with chain', () => {
+    it('should allow to add log with chain', () => {
         const result = new Writer(5, ['initializing writer with 5'])
             .chain(value => new Writer(value * 2, [`doubling ${value}`]))
             .chain(value => new Writer(value + 1, [`incrementing ${value}`]))

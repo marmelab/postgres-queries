@@ -39,7 +39,7 @@ describe('whereQuery', () => {
                     'column7',
                     'column9',
                 ],
-            ),
+            ).read(),
         ).toEqual({
             value: [
                 'WHERE column1 = $column1',
@@ -61,7 +61,7 @@ describe('whereQuery', () => {
             ].join(' '),
             log: [{
                 type: 'ignoring',
-                message: 'Ignoring columns: [column8, ignored]. Allowed columns: [column1, column2, column3, column4, column5, table.column6, column7, column9]'
+                message: 'Ignoring columns: [ignored, column8]. Allowed columns: [column1, column2, column3, column4, column5, table.column6, column7, column9]'
             }],
         });
     });
@@ -259,15 +259,17 @@ describe('whereQuery', () => {
                     },
                     ['column1', 'column2', 'column3', 'column4'],
                 ).map(w => w.read()),
-            ).toEqual([
-                { log: [], value: { type: 'query', col: 'column1', value: 1 }},
-                { log: [{ type: 'ignoring', message: 'column5'}], value: { type: 'discarded', col: 'column5', value: 6 } },
-                { log: [], value: { type: 'from', col: 'from_column3', value: 3 } },
-                { log: [], value: { type: 'like', col: 'like_column4', value: 4 } },
-                { log: [], value: { type: 'match', col: 'match', value: 5 } },
-                { log: [], value: { type: 'to', col: 'to_column2', value: 2 } },
+            ).toEqual({
+                values: [
+                    { log: [], value: { type: 'query', col: 'column1', value: 1 }},
+                    { log: [{ type: 'ignoring', message: 'column5'}], value: { type: 'discarded', col: 'column5', value: 6 } },
+                    { log: [], value: { type: 'from', col: 'from_column3', value: 3 } },
+                    { log: [], value: { type: 'like', col: 'like_column4', value: 4 } },
+                    { log: [], value: { type: 'match', col: 'match', value: 5 } },
+                    { log: [], value: { type: 'to', col: 'to_column2', value: 2 } },
 
-            ]);
+                ]
+            });
         });
     });
 

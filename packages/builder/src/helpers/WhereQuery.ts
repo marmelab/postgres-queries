@@ -1,6 +1,6 @@
 import * as signale from 'signale';
-import Reader from '../utils/Reader';
 import Writer from '../utils/Writer';
+import List from '../utils/List';
 
 export const getColPlaceHolder = (column, value: any, not: boolean | null = false) => {
     const normalizedColumn = column.replace('.', '__');
@@ -70,7 +70,7 @@ export const getColType = (column, searchableCols) => {
 };
 
 export const sortQueryType = (filters, searchableCols) => {
-    return Object.keys(filters).map(col => {
+    return new List(Object.keys(filters)).map(col => {
         const typeWriter = getColType(col, searchableCols);
 
         return typeWriter.map(type => ({
@@ -143,22 +143,20 @@ export const whereQuery = (filters, searchableCols) => {
     }
     const filtersByType = sortQueryType(filters, searchableCols);
 
-    const { value: whereParts, log } = filtersByType
+    const { log, value: whereParts } = filtersByType
         .map(writer => writer.chain(({ type, col, value }) => {
             const getPart = wherePartsBuilder[type];
 
             return getPart ? getPart(col, value, searchableCols) : Writer.of(undefined);
-        }).read())
-        .reduce((result, { value, log }) => ({
-            value: value ? [...result.value, value] : result.value,
-            log: [...result.log, ...log],
-        }), { value: [], log: [] });
+        }))
+        .sequence(Writer.of) // convert List([Writer(value), Writer(value)]) to Writer(List([value, value]))
+        .read(); // And now read get executed for all value in the List merging all log and all values. It's mathemagic!
 
     const ignoredColumns = log.filter(({ type }) => type === 'ignoring');
 
     log.filter(({ type }) => type === 'warn').map(({ message }) => signale.warn(message));
 
-    return new Writer(getResult(whereParts), [
+    return new Writer(getResult(whereParts.toArray().filter(v => v)), [
         ignoredColumns.length && { type: 'ignoring', message:  `Ignoring columns: [${
             ignoredColumns.map(({ message }) => message).join(', ')
         }]. Allowed columns: [${searchableCols.join(', ')}]`},
