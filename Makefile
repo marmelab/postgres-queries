@@ -11,7 +11,7 @@ test: ## Run Unit Tests
 	NODE_ENV=test yarn test
 
 test-watch: ## Run Unit Tests Using Watch Mode
-	NODE_ENV=test yarn --watch
+	NODE_ENV=test yarn test:watch
 
 build: ## Make local packages build. Usefull to test build because otherwise the publication automatically launches the build
 	yarn clean

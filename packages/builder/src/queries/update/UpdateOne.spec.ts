@@ -173,4 +173,23 @@ WHERE id = $id AND uid = $uid AND columnc = $columnc AND columnd = $columnd
 RETURNING *`,
         });
     });
+
+    it('should display warning', () => {
+        const updateOneQuery = updateOne({
+            table: 'character',
+            writableCols: ['user_id', 'name', 'position'],
+            returnCols: ['id', 'uuid', 'user_id', 'name', 'position'],
+            primaryKey: 'id',
+        });
+
+        const character = {
+            id: 42,
+            uuid: 'uuid',
+            user_id: 1,
+            name: 'name',
+            position: 'position',
+        };
+
+        updateOneQuery(character.id, character);
+    });
 });

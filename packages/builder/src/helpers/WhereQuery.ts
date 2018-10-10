@@ -1,5 +1,5 @@
 import * as signale from 'signale';
-import { middleware } from '../utils/Middleware';
+import Reader from '../utils/Reader';
 
 export const getColPlaceHolder = (column, value, not) => {
     const normalizedColumn = column.replace('.', '__');
@@ -65,7 +65,7 @@ export const getColType = (column, searchableCols) => {
         column.indexOf('not_like_') === 0 &&
         searchableCols.indexOf(column.substr(9)) !== -1
     ) {
-        return 'not like';
+        return 'notLike';
     }
 
     signale.warn(
@@ -85,13 +85,13 @@ export const sortQueryType = (filters, searchableCols) => {
                 [colType]: { ...result[colType], [col]: filters[col] },
             };
         },
-        { match: {}, from: {}, to: {}, query: {} },
+        { match: {}, from: {}, to: {}, query: {}, like: {}, notLike: {}, not: {} },
     );
 };
 
-export const getMatch = (filters, searchableCols, whereParts = []) => {
+export const getMatch = (filters, searchableCols) => {
     return !searchableCols.length
-        ? whereParts
+        ? []
         : Object.keys(filters).reduce(
               result => [
                   ...result,
@@ -102,31 +102,31 @@ export const getMatch = (filters, searchableCols, whereParts = []) => {
                       )
                       .join(' OR ')})`,
               ],
-              whereParts,
+              [],
           );
 };
 
-export const getLike = (filters, searchableCols, whereParts = []) => {
+export const getLike = (filters, searchableCols) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
             `${column.substr(5)}::text ILIKE $${column.replace('.', '__')}`,
         ],
-        whereParts,
+        [],
     );
 };
 
-export const getNotLike = (filters, searchableCols, whereParts = []) => {
+export const getNotLike = (filters, searchableCols) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
             `${column.substr(9)}::text NOT ILIKE $${column.replace('.', '__')}`,
         ],
-        whereParts,
+        [],
     );
 };
 
-export const getFrom = (filters, searchableCols, whereParts = []) => {
+export const getFrom = (filters, searchableCols) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -135,11 +135,11 @@ export const getFrom = (filters, searchableCols, whereParts = []) => {
                 '__',
             )}::timestamp`,
         ],
-        whereParts,
+        [],
     );
 };
 
-export const getTo = (filters, searchableCols, whereParts = []) => {
+export const getTo = (filters, searchableCols) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -148,11 +148,11 @@ export const getTo = (filters, searchableCols, whereParts = []) => {
                 '__',
             )}::timestamp`,
         ],
-        whereParts,
+        [],
     );
 };
 
-export const getNot = (filters, searchableCols, whereParts = []) => {
+export const getNot = (filters, searchableCols) => {
     return Object.keys(filters).reduce(
         (result, column) => [
             ...result,
@@ -162,7 +162,7 @@ export const getNot = (filters, searchableCols, whereParts = []) => {
                 true,
             )}`,
         ],
-        whereParts,
+        [],
     );
 };
 
@@ -176,19 +176,25 @@ export const getQuery = (filters, searchableCols, whereParts = []) => {
     );
 };
 
-export const getResult = (filters, searchableCols, whereParts = []) => {
+export const getResult = (whereParts = []) => {
     return whereParts.length ? `WHERE ${whereParts.join(' AND ')}` : '';
 };
 
+
+
+const getFilterFor = (key, fn) => whereParts => new Reader((context) => [...whereParts, ...fn(context[key], context.searchableCols) ]);
+
 export const whereQuery = (filters, searchableCols) => {
-    return middleware(sortQueryType(filters, searchableCols), searchableCols)
-        .use(getMatch, 'match')
-        .use(getFrom, 'from')
-        .use(getTo, 'to')
-        .use(getLike, 'like')
-        .use(getNotLike, 'not like')
-        .use(getNot, 'not')
-        .use(getQuery, 'query')
-        .use(getResult)
-        .execute([]);
+    const filtersByType = sortQueryType(filters, searchableCols);
+
+    return Reader.of([])
+        .chain(getFilterFor('match', getMatch))
+        .chain(getFilterFor('from', getFrom))
+        .chain(getFilterFor('to', getTo))
+        .chain(getFilterFor('like', getLike))
+        .chain(getFilterFor('notLike', getNotLike))
+        .chain(getFilterFor('not', getNot))
+        .chain(getFilterFor('query', getQuery))
+        .map(getResult)
+        .run({ ...filtersByType, searchableCols });
 };

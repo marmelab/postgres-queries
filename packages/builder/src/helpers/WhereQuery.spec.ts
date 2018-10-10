@@ -161,7 +161,7 @@ describe('whereQuery', () => {
 
         it('should return not like if column is suffixed by not_like and is in searchableCols', () => {
             expect(getColType('not_like_column', ['column'])).toEqual(
-                'not like',
+                'notLike',
             );
         });
 
@@ -205,6 +205,8 @@ describe('whereQuery', () => {
                 to: {
                     to_column2: 2,
                 },
+                not: {},
+                notLike: {}
             });
         });
     });
@@ -223,31 +225,15 @@ describe('whereQuery', () => {
             ]);
         });
 
-        it('should augment passed result if any', () => {
-            const whereParts = getMatch(
-                {
-                    match: 'needle',
-                },
-                ['column1', 'column2'],
-                ['column1 = $column1'],
-            );
-
-            expect(whereParts).toEqual([
-                'column1 = $column1',
-                '(column1::text ILIKE $match OR column2::text ILIKE $match)',
-            ]);
-        });
-
         it('should return passed result if there is no searchableCols', () => {
             const whereParts = getMatch(
                 {
                     match: 'needle',
                 },
                 [],
-                ['column1 = $column1'],
             );
 
-            expect(whereParts).toEqual(['column1 = $column1']);
+            expect(whereParts).toEqual([]);
         });
     });
 
@@ -276,21 +262,6 @@ describe('whereQuery', () => {
 
             expect(whereParts).toEqual([
                 'birth::timestamp >= $from_birth::timestamp',
-                'date::timestamp >= $from_date::timestamp',
-            ]);
-        });
-
-        it('should augment passed result if any', () => {
-            const whereParts = getFrom(
-                {
-                    from_date: 'date',
-                },
-                ['column', 'date'],
-                ['column1 = $column1'],
-            );
-
-            expect(whereParts).toEqual([
-                'column1 = $column1',
                 'date::timestamp >= $from_date::timestamp',
             ]);
         });
@@ -324,21 +295,6 @@ describe('whereQuery', () => {
                 'date::timestamp <= $to_date::timestamp',
             ]);
         });
-
-        it('should augment passed result if any', () => {
-            const whereParts = getTo(
-                {
-                    to_date: 'date',
-                },
-                ['column', 'date'],
-                ['column1 = $column1'],
-            );
-
-            expect(whereParts).toEqual([
-                'column1 = $column1',
-                'date::timestamp <= $to_date::timestamp',
-            ]);
-        });
     });
 
     describe('getLike', () => {
@@ -351,21 +307,6 @@ describe('whereQuery', () => {
             );
 
             expect(whereParts).toEqual(['column::text ILIKE $like_column']);
-        });
-
-        it('should augment passed result if any', () => {
-            const whereParts = getLike(
-                {
-                    like_column: 'pattern',
-                },
-                ['column'],
-                ['column1 = $column1'],
-            );
-
-            expect(whereParts).toEqual([
-                'column1 = $column1',
-                'column::text ILIKE $like_column',
-            ]);
         });
     });
 
@@ -382,21 +323,6 @@ describe('whereQuery', () => {
                 'column::text NOT ILIKE $not_like_column',
             ]);
         });
-
-        it('should augment passed result if any', () => {
-            const whereParts = getNotLike(
-                {
-                    not_like_column: 'pattern',
-                },
-                ['column'],
-                ['column1 = $column1'],
-            );
-
-            expect(whereParts).toEqual([
-                'column1 = $column1',
-                'column::text NOT ILIKE $not_like_column',
-            ]);
-        });
     });
 
     describe('getNot', () => {
@@ -409,21 +335,6 @@ describe('whereQuery', () => {
             );
 
             expect(whereParts).toEqual(['column != $not_column']);
-        });
-
-        it('should augment passed result if any', () => {
-            const whereParts = getNot(
-                {
-                    not_column: 'not me',
-                },
-                ['column'],
-                ['column1 = $column1'],
-            );
-
-            expect(whereParts).toEqual([
-                'column1 = $column1',
-                'column != $not_column',
-            ]);
         });
     });
 
@@ -459,21 +370,6 @@ describe('whereQuery', () => {
                 'table.column1 = $table__column1',
                 'table.column2 = $table__column2',
                 'table.column3 = $table__column3',
-            ]);
-        });
-
-        it('should augment passed result if any', () => {
-            const whereParts = getQuery(
-                {
-                    column1: 1,
-                },
-                ['column1', 'other'],
-                ['column2 = $column2'],
-            );
-
-            expect(whereParts).toEqual([
-                'column2 = $column2',
-                'column1 = $column1',
             ]);
         });
 

@@ -3,16 +3,18 @@ import { middleware } from './Middleware';
 describe('middleware', () => {
     it('should execute used function f with options, and null', () => {
         let receivedArgs;
-        const f = function(...args) {
-            receivedArgs = args;
+        const f = jest.fn(() => 'fResult');
 
-            return 'fResult';
-        };
-        const result = middleware('entry', 'options')
+        // function(...args) {
+        //     receivedArgs = args;
+
+        //     return 'fResult';
+        // };
+        const result = middleware({}, 'options')
             .use(f)
             .execute('empty result');
 
-        expect(receivedArgs).toEqual(['entry', 'options', 'empty result']);
+        expect(f).toHaveBeenCalledWith({}, 'options', 'empty result');
         expect(result).toEqual('fResult');
     });
 
