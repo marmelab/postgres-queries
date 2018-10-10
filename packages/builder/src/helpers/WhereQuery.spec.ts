@@ -65,19 +65,19 @@ describe('whereQuery', () => {
         it('should return value if value is IS_NULL or IS_NOT_NULL', () => {
             expect(getColPlaceHolder('colName', 'IS_NULL')).toEqual({
                 value: 'IS_NULL',
-                log: ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed'],
+                log: [{ type: 'warn', message: 'Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed' }],
             });
             expect(getColPlaceHolder('colName', 'IS NULL')).toEqual({
                 value: 'IS NULL',
-                log: ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed'],
+                log: [{ type: 'warn', message: 'Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed'}],
             });
             expect(getColPlaceHolder('colName', 'IS_NOT_NULL')).toEqual({
                 value: 'IS_NOT_NULL',
-                log: ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed'],
+                log: [{ type: 'warn', message: 'Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed' }],
             });
             expect(getColPlaceHolder('colName', 'IS NOT NULL')).toEqual({
                 value: 'IS NOT NULL',
-                log: ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed'],
+                log: [{ type: 'warn', message: 'Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed' }],
             });
         });
 
@@ -146,14 +146,14 @@ describe('whereQuery', () => {
         it('should return discarded if col is match but searchableCols is empty', () => {
             expect(getColType('match', [])).toEqual({
                 value: 'discarded',
-                log: ['There are no allowed columns to be searched, all filters will be ignored'],
+                log: [{ type: 'no searchable', message: 'There are no allowed columns to be searched, all filters will be ignored' }],
             });
         });
 
         it('should return discarded if col is not in searchableCols', () => {
             expect(getColType('needle', ['haystack'])).toEqual({
                 value: 'discarded',
-                log: ['Ignoring column: needle. Allowed columns: haystack'],
+                log: [{ type: 'ignoring', message: 'needle' }],
             });
         });
 
@@ -167,7 +167,7 @@ describe('whereQuery', () => {
         it('should return discarded if column is suffixed by to but is not in searchableCols', () => {
             expect(getColType('to_column', ['other_column'])).toEqual({
                 value: 'discarded',
-                log: ['Ignoring column: to_column. Allowed columns: other_column'],
+                log: [{ type: 'ignoring', message: 'to_column'}],
             });
         });
 
@@ -179,7 +179,7 @@ describe('whereQuery', () => {
         it('should return discarded if column is suffixed by from but is not in searchableCols', () => {
             expect(getColType('from_column', ['other_column'])).toEqual({
                 value: 'discarded',
-                log: ['Ignoring column: from_column. Allowed columns: other_column'],
+                log: [{ type: 'ignoring', message: 'from_column' }],
             });
         });
 
@@ -193,7 +193,7 @@ describe('whereQuery', () => {
         it('should return discarded if column is suffixed by like but is not in searchableCols', () => {
             expect(getColType('like_column', ['other_column'])).toEqual({
                 value: 'discarded',
-                log: ['Ignoring column: like_column. Allowed columns: other_column'],
+                log: [{ type: 'ignoring', message: 'like_column'}],
             });
         });
 
@@ -206,7 +206,7 @@ describe('whereQuery', () => {
 
         it('should return discarded if column is suffixed by not_like but is not in searchableCols', () => {
             expect(getColType('not_like_column', ['other_column'])).toEqual({
-                log: ['Ignoring column: not_like_column. Allowed columns: other_column'],
+                log: [{ type: 'ignoring', message: 'not_like_column'}],
                 value: 'discarded',
             });
         });
@@ -228,7 +228,7 @@ describe('whereQuery', () => {
                 ).map(w => w.read()),
             ).toEqual([
                 { log: [], value: { type: 'query', col: 'column1', value: 1 }},
-                { log: ['Ignoring column: column5. Allowed columns: column1,column2,column3,column4'], value: { type: 'discarded', col: 'column5', value: 6 } },
+                { log: [{ type: 'ignoring', message: 'column5'}], value: { type: 'discarded', col: 'column5', value: 6 } },
                 { log: [], value: { type: 'from', col: 'from_column3', value: 3 } },
                 { log: [], value: { type: 'like', col: 'like_column4', value: 4 } },
                 { log: [], value: { type: 'match', col: 'match', value: 5 } },

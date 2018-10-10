@@ -1,6 +1,6 @@
 export default class Writer {
     private value: any;
-    private log: string[];
+    private log: any[];
     static of(value) {
         return new Writer(value, []);
     }

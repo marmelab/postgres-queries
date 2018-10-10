@@ -12,7 +12,7 @@ export const getColPlaceHolder = (column, value: any, not: boolean | null = fals
         case 'IS NULL':
         case 'IS_NOT_NULL':
         case 'IS NOT NULL':
-            return new Writer(value, ['Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed']);
+            return new Writer(value, [{ type: 'warn', message: 'Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed' }]);
         case 'IN':
             return Writer.of(`${not ? 'NOT ' : ''}IN (${value
                 .map((_, index) => `$${normalizedColumn}${index + 1}`)
@@ -24,7 +24,10 @@ export const getColPlaceHolder = (column, value: any, not: boolean | null = fals
 
 export const getColType = (column, searchableCols) => {
     if (!searchableCols.length) {
-        return new Writer('discarded', ['There are no allowed columns to be searched, all filters will be ignored']);
+        return new Writer('discarded', [{
+            type: 'no searchable',
+            message: 'There are no allowed columns to be searched, all filters will be ignored' },
+        ]);
     }
     if (column === 'match' && searchableCols.length > 0) {
         return Writer.of('match');
@@ -63,7 +66,7 @@ export const getColType = (column, searchableCols) => {
         return Writer.of('notLike');
     }
 
-    return new Writer('discarded', [`Ignoring column: ${column}. Allowed columns: ${searchableCols}`]);
+    return new Writer('discarded', [{ type: 'ignoring', message: column }]);
 };
 
 export const sortQueryType = (filters, searchableCols) => {
@@ -145,7 +148,17 @@ export const whereQuery = (filters, searchableCols) => {
             log: [...result.log, ...log],
         }), { value: [], log: [] });
 
-    log.map(signale.warn);
+    const ignoredColumns = log.filter(({ type }) => type === 'ignoring');
+
+    if (ignoredColumns.length) {
+        signale.warn(`Ignoring columns: [${
+            ignoredColumns.map(({ message }) => message).join(', ')
+        }]. Allowed columns: [${searchableCols.join(', ')}]`);
+    }
+
+    log.filter(({ type }) => type === 'warn').map(({ message }) => signale.warn(message));
+
+    log.find(({ type }) => type === 'no searchable');
 
     return getResult(whereParts);
 };
