@@ -20,6 +20,10 @@ export default class Writer {
     ap(other) {
         return this.chain(fn => other.map(fn));
     }
+    flatten() {
+        const inner = this.value;
+        return new Writer(inner.value, this.log.concat(inner.log));
+    }
     chain(fn) {
         const inner = fn(this.value).read();
         return new Writer(inner.value, this.log.concat(inner.log));

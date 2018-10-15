@@ -13,7 +13,7 @@ export default class List {
         return this.chain(fn => other.map(fn));
     }
     flatten() {
-        new List(this.values.reduce((acc, v) => [...acc, ...v.values], []));
+        return new List(this.values.reduce((acc, v) => [...acc, ...v.values], []));
     }
     chain(fn) {
         return this.map(fn).flatten();
