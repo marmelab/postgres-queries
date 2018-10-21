@@ -1,25 +1,29 @@
-export default class List {
-    static of(value) {
+export default class List<T> {
+    static of<A>(value: A):List<A> {
         return new List([value]);
     }
-    values: any[]
-    constructor(values) {
+    private readonly values: ReadonlyArray<T>
+    constructor(values: ReadonlyArray<T>) {
         this.values = values;
     }
-    map(fn) {
+    toArray():ReadonlyArray<T> {
+        return this.values;
+    }
+    concat(x: T):List<T> {
+        return new List(this.values.concat(x));
+    }
+    map<B>(fn: (v:T) => B):List<B> {
         return new List(this.values.map(v => fn(v)));
     }
-    ap(other) {
-        return this.chain(fn => other.map(fn));
+    flatten<A>():List<A> {
+        const values = this.values as any as Array<List<A>>;
+        return new List(values.reduce((acc: ReadonlyArray<A>, v:List<A>) => [...acc, ...v.toArray()], []));
     }
-    flatten() {
-        return new List(this.values.reduce((acc, v) => [...acc, ...v.values], []));
-    }
-    chain(fn) {
+    chain<A>(fn: (v: T) => List<A>):List<A> {
         return this.map(fn).flatten();
     }
-    concat(x) {
-        return new List(this.values.concat(x));
+    ap<A,B>(other:List<A>):List<B> {
+        return this.chain((fn:((v:A) => B) & T):List<B> => other.map(fn));
     }
     traverse(of, fn) {
         return this.values.reduce(
@@ -29,8 +33,5 @@ export default class List {
     }
     sequence(of) {
         return this.traverse(of, v => v);
-    }
-    toArray() {
-        return this.values;
     }
 };
