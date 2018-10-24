@@ -35,7 +35,10 @@ export const remove = (
             ? sanitizeIdentifier(finalFilterCols, finalIdentifiers)
             : sanitizeParameter(finalFilterCols, finalIdentifiers);
 
-        const { value: where, log } = whereQuery(parameters, finalFilterCols).read();
+        const { value: where, log } = whereQuery(
+            parameters,
+            finalFilterCols,
+        ).read();
         log.map(signale.debug);
         const sql = `DELETE FROM ${table} ${where} ${returning}`;
 

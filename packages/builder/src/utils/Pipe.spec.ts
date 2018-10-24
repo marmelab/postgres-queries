@@ -10,6 +10,6 @@ describe('pipe', () => {
             addSpace,
             addWorld,
         );
-        expect(helloWorld()).toEqual('hello world');
+        expect(helloWorld(null)).toEqual('hello world');
     });
 });

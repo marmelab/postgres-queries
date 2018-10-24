@@ -1,8 +1,13 @@
 import * as signale from 'signale';
-import Writer from '../utils/Writer';
-import List from '../utils/List';
 
-export const getColPlaceHolder = (column, value: any, not: boolean | null = false) => {
+import List from '../utils/List';
+import Writer from '../utils/Writer';
+
+export const getColPlaceHolder = (
+    column,
+    value: any,
+    not: boolean | null = false,
+) => {
     const normalizedColumn = column.replace('.', '__');
     const type = Array.isArray(value) ? 'IN' : value;
     switch (type) {
@@ -12,11 +17,19 @@ export const getColPlaceHolder = (column, value: any, not: boolean | null = fals
         case 'IS NULL':
         case 'IS_NOT_NULL':
         case 'IS NOT NULL':
-            return new Writer(value, [{ type: 'warn', message: 'Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed' }]);
+            return new Writer(value, [
+                {
+                    type: 'warn',
+                    message:
+                        'Passing `IS (NOT) NULL` to filter value is deprecated, please pass null directly with not_ prefix if needed',
+                },
+            ]);
         case 'IN':
-            return Writer.of(`${not ? 'NOT ' : ''}IN (${value
-                .map((_, index) => `$${normalizedColumn}${index + 1}`)
-                .join(', ')})`);
+            return Writer.of(
+                `${not ? 'NOT ' : ''}IN (${value
+                    .map((_, index) => `$${normalizedColumn}${index + 1}`)
+                    .join(', ')})`,
+            );
         default:
             return Writer.of(`${not ? '!=' : '='} $${normalizedColumn}`);
     }
@@ -24,10 +37,13 @@ export const getColPlaceHolder = (column, value: any, not: boolean | null = fals
 
 export const getColType = (column, searchableCols) => {
     if (!searchableCols.length) {
-        return new Writer('discarded', [{
-            type: 'no searchable',
-            message: 'There are no allowed columns, all columns will be ignored'
-        }]);
+        return new Writer('discarded', [
+            {
+                type: 'no searchable',
+                message:
+                    'There are no allowed columns, all columns will be ignored',
+            },
+        ]);
     }
     if (column === 'match' && searchableCols.length > 0) {
         return Writer.of('match');
@@ -85,9 +101,8 @@ export const getMatch = (col, value, searchableCols) => {
     return !searchableCols.length
         ? null
         : `(${searchableCols
-            .map(searchableCol => `${searchableCol}::text ILIKE $match`)
-            .join(' OR ')
-        })`;
+              .map(searchableCol => `${searchableCol}::text ILIKE $match`)
+              .join(' OR ')})`;
 };
 
 export const getLike = (col, value, searchableCols) => {
@@ -95,7 +110,10 @@ export const getLike = (col, value, searchableCols) => {
 };
 
 export const getNotLike = (col, value, searchableCols) => {
-    return `${col.replace('not_like_', '')}::text NOT ILIKE $${col.replace('.', '__')}`;
+    return `${col.replace('not_like_', '')}::text NOT ILIKE $${col.replace(
+        '.',
+        '__',
+    )}`;
 };
 
 export const getFrom = (col, value, searchableCols) => {
@@ -113,14 +131,12 @@ export const getTo = (col, value, searchableCols) => {
 };
 
 export const getNot = (col, value, searchableCols) => {
-    return getColPlaceHolder(
-        col,
-        value,
-        true,
-    ).map(value => `${col.replace('not_', '')} ${value}`);
+    return getColPlaceHolder(col, value, true).map(
+        v => `${col.replace('not_', '')} ${v}`,
+    );
 };
 export const getQuery = (col, value, searchableCols) => {
-    return getColPlaceHolder(col, value, false).map(value => `${col} ${value}`);
+    return getColPlaceHolder(col, value, false).map(v => `${col} ${v}`);
 };
 
 export const getResult = (whereParts = []) => {
@@ -135,34 +151,51 @@ const wherePartsBuilder = {
     notLike: Writer.lift(getNotLike),
     not: getNot,
     query: getQuery,
-}
+};
 
 export const whereQuery = (filters, searchableCols) => {
     if (!searchableCols.length) {
-        return new Writer('', [{
-            type: 'no searchable',
-            message: 'There are no allowed columns, all columns will be ignored'
-        }])
+        return new Writer('', [
+            {
+                type: 'no searchable',
+                message:
+                    'There are no allowed columns, all columns will be ignored',
+            },
+        ]);
     }
     const filtersByType = sortQueryType(filters, searchableCols);
 
     const { log, value: whereParts } = filtersByType
-        .map(writer => writer.chain(({ type, col, value }) => {
-            const getPart = wherePartsBuilder[type];
+        .map(writer =>
+            writer.chain(({ type, col, value }) => {
+                const getPart = wherePartsBuilder[type];
 
-            return getPart ? getPart(col, value, searchableCols) : Writer.of(undefined);
-        }))
+                return getPart
+                    ? getPart(col, value, searchableCols)
+                    : Writer.of(undefined);
+            }),
+        )
         .sequence(Writer.of) // convert List([Writer(value), Writer(value)]) to Writer(List([value, value]))
         .read(); // And now read get executed for all value in the List merging all log and all values. It's mathemagic!
 
     const ignoredColumns = log.filter(({ type }) => type === 'ignoring');
 
-    log.filter(({ type }) => type === 'warn').map(({ message }) => signale.warn(message));
+    log.filter(({ type }) => type === 'warn').map(({ message }) =>
+        signale.warn(message),
+    );
 
-    return new Writer(getResult(whereParts.toArray().filter(v => v)), [
-        ignoredColumns.length && { type: 'ignoring', message:  `Ignoring columns: [${
-            ignoredColumns.map(({ message }) => message).join(', ')
-        }]. Allowed columns: [${searchableCols.join(', ')}]`},
-        log.find(({ type }) => type === 'no searchable'),
-    ].filter(v => v));
+    return new Writer(
+        getResult(whereParts.toArray().filter(v => v)),
+        [
+            ignoredColumns.length && {
+                type: 'ignoring',
+                message: `Ignoring columns: [${ignoredColumns
+                    .map(({ message }) => message)
+                    .join(', ')}]. Allowed columns: [${searchableCols.join(
+                    ', ',
+                )}]`,
+            },
+            log.find(({ type }) => type === 'no searchable'),
+        ].filter(v => v),
+    );
 };

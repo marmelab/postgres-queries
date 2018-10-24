@@ -37,7 +37,10 @@ export const selectOne = ({
             ...permanentFilters,
         });
 
-        const { value: where, log } = whereQuery(parameters, identifiers).read();
+        const { value: where, log } = whereQuery(
+            parameters,
+            identifiers,
+        ).read();
         log.map(signale.warn);
         const sql = `SELECT ${select} FROM ${table} ${where} LIMIT 1`;
 

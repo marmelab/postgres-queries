@@ -27,6 +27,7 @@
         "no-submodule-imports": false,
         "no-unused-variable": [true, {
             "check-parameters": true
-        }]
+        }],
+        "object-literal-sort-keys": false
     }
 }

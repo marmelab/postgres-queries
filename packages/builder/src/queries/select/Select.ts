@@ -52,7 +52,10 @@ export const select = ({
             ...Object.keys(permanentFilters),
         ];
 
-        const { value: where, log } = whereQuery(finalFilters, finalSearchableCols).read();
+        const { value: where, log } = whereQuery(
+            finalFilters,
+            finalSearchableCols,
+        ).read();
         log.map(signale.warn);
 
         let sql = `SELECT ${selectedCol} FROM ${table} ${where}`;

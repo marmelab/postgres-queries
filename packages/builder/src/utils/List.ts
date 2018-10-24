@@ -5,21 +5,21 @@
  */
 export default class List<T> {
     // Allow to put a single value in a List
-    static of<A>(value: A):List<A> {
+    public static of<A>(value: A): List<A> {
         return new List([value]);
     }
-    readonly private values: ReadonlyArray<T>
+    private readonly values: ReadonlyArray<T>;
     constructor(values: ReadonlyArray<T>) {
         this.values = values;
     }
-    toArray():ReadonlyArray<T> {
+    public toArray(): ReadonlyArray<T> {
         return this.values;
     }
-    concat(x: T):List<T> {
+    public concat(x: T): List<T> {
         return new List(this.values.concat(x));
     }
     // Same as Array.map but without access to index and array
-    map<B>(fn: (v:T) => B):List<B> {
+    public map<B>(fn: (v: T) => B): List<B> {
         return new List(this.values.map(v => fn(v)));
     }
     /**
@@ -28,24 +28,29 @@ export default class List<T> {
      * @this List([List(values), ...])
      * @return List(values)
      */
-    flatten<A>():List<A> {
-        const values = this.values as any as Array<List<A>>;
-        return new List(values.reduce((acc: ReadonlyArray<A>, v:List<A>) => [...acc, ...v.toArray()], []));
+    public flatten<A>(): List<A> {
+        const values = (this.values as any) as Array<List<A>>;
+        return new List(
+            values.reduce(
+                (acc: ReadonlyArray<A>, v: List<A>) => [...acc, ...v.toArray()],
+                [],
+            ),
+        );
     }
     /**
      * Map a function to the values in the List then flatten the result
      * @param: A function returning a List
      * @return List(values)
      */
-    chain<A>(fn: (v: T) => List<A>):List<A> {
+    public chain<A>(fn: (v: T) => List<A>): List<A> {
         return this.map(fn).flatten();
     }
     /**
      * Applicative method
      * Allow to apply values to functions contained in List
      */
-    ap<A,B>(other:List<A>):List<B> {
-        return this.chain((fn:((v:A) => B) & T):List<B> => other.map(fn));
+    public ap<A, B>(other: List<A>): List<B> {
+        return this.chain((fn: ((v: A) => B) & T): List<B> => other.map(fn));
     }
     /**
      * Traversable method
@@ -55,7 +60,7 @@ export default class List<T> {
      * @param fn the transformation being applied to the applicative
      * @return Applicative(List)
      */
-    traverse(of, fn) {
+    public traverse(of, fn) {
         return this.values.reduce(swap(fn), of(new List([])));
     }
     /**
@@ -65,13 +70,14 @@ export default class List<T> {
      * @param of the applicative constructor
      * @return Applicative(List)
      */
-    sequence(of) {
+    public sequence(of) {
         return this.traverse(of, v => v);
     }
-};
+}
 
-const concat = values => value => value.concat(values)
+const concat = values => value => value.concat(values);
 
-const swap = fn => (traversable, applicative) => fn(applicative)
-    .map(concat)
-    .ap(traversable);
+const swap = fn => (traversable, applicative) =>
+    fn(applicative)
+        .map(concat)
+        .ap(traversable);
