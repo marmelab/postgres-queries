@@ -1,14 +1,19 @@
 import * as signale from 'signale';
 
-import { AnyMap, Config, Query, StringMap } from '../../Configuration';
+import {
+    Config,
+    filters as filtersType,
+    Literal,
+    Query,
+} from '../../Configuration';
 import { whereQuery } from '../../helpers/WhereQuery';
 
 interface Count extends Config {
-    permanentFilters?: StringMap;
+    permanentFilters?: filtersType;
 }
 
 export interface CountAllFilters {
-    filters?: AnyMap;
+    filters?: Literal<any>;
 }
 
 export const count = ({ table, permanentFilters = {} }: Count) => ({

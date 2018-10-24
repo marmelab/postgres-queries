@@ -1,4 +1,4 @@
-import Literal from '../interfaces/Literal';
+import { Literal } from '../Configuration';
 import { arrayToLitteral } from '../utils/ArrayToLitteral';
 import { curry } from '../utils/Curry';
 import { getColType } from './WhereQuery';

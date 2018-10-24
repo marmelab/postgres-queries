@@ -1,13 +1,13 @@
-import { Config, Query, StringMap } from '../../Configuration';
+import { Config, filters, Literal, Query } from '../../Configuration';
 import { remove } from './Remove';
 
 interface RemoveOne extends Config {
     primaryKey: string | string[];
     returnCols: string | string[];
-    permanentFilters?: StringMap;
+    permanentFilters?: filters;
 }
 
-type QueryFunction = (ids: StringMap) => Query;
+type QueryFunction = (ids: Literal<any>) => Query;
 
 export const removeOne = ({
     table,

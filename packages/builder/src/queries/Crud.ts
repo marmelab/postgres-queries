@@ -1,4 +1,4 @@
-import { AnyMap, Config, StringMap } from '../Configuration';
+import { Config, filters, Literal } from '../Configuration';
 
 import { batchInsert as batchInsertQuery } from './insert/BatchInsert';
 import { insertOne as insertOneQuery } from './insert/InsertOne';
@@ -14,10 +14,10 @@ interface Crud extends Config {
     returnCols: string[];
     writableCols: string[];
     searchableCols?: string[];
-    specificSorts?: AnyMap;
+    specificSorts?: Literal<any>;
     groupByCols?: string[];
     withQuery?: boolean;
-    permanentFilters?: StringMap;
+    permanentFilters?: filters;
 }
 
 export const crud = ({

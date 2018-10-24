@@ -1,4 +1,4 @@
-import { AnyMap, Config, Query } from '../../Configuration';
+import { Config, Literal, Query } from '../../Configuration';
 import { batchParameter } from '../../helpers/BatchParameter';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { valueSubQuery } from '../../helpers/ValueSubQuery';
@@ -8,7 +8,7 @@ interface BatchInsert extends Config {
     returnCols?: string | string[];
 }
 
-type QueryFunction = (rows: AnyMap[]) => Query;
+type QueryFunction = (rows: Array<Literal<any>>) => Query;
 
 export const batchInsert = ({
     table,

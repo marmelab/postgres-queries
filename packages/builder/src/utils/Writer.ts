@@ -20,7 +20,7 @@ export default class Writer<T> {
      * @param fn the function to lift
      * @param a new Function applying fn and wrapping its return value in a writer
      */
-    public static lift(fn: (...v: any) => any) {
+    public static lift(fn: (...v: any[]) => any) {
         return (...args: any[]) => Writer.of(fn(...args));
     }
     private readonly value: T;

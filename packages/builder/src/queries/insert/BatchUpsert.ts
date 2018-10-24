@@ -1,4 +1,4 @@
-import { Config, Query, StringMap } from '../../Configuration';
+import { Config, filters, Query } from '../../Configuration';
 import { batchParameter } from '../../helpers/BatchParameter';
 import { valueSubQuery } from '../../helpers/ValueSubQuery';
 import { whereQuery } from '../../helpers/WhereQuery';
@@ -7,7 +7,7 @@ interface BatchUpsert extends Config {
     primaryKey: string[];
     writableCols: string[];
     returnCols?: string[];
-    permanentFilters?: StringMap;
+    permanentFilters?: filters;
 }
 
 type QueryFunction = (rows: any[]) => Query;

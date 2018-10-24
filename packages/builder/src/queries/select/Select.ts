@@ -1,6 +1,12 @@
 import * as signale from 'signale';
 
-import { AnyMap, Config, Query, SortDir, StringMap } from '../../Configuration';
+import {
+    Config,
+    filters as filtersType,
+    Literal,
+    Query,
+    SortDir,
+} from '../../Configuration';
 import { sanitizeParameter } from '../../helpers/SanitizeParameter';
 import { whereQuery } from '../../helpers/WhereQuery';
 import { flatten } from '../../utils/Flatten';
@@ -9,17 +15,17 @@ interface Select extends Config {
     primaryKey: string | string[];
     returnCols: string[];
     searchableCols?: string[];
-    specificSorts?: AnyMap;
+    specificSorts?: Literal<any>;
     groupByCols?: string[];
     withQuery?: boolean;
-    permanentFilters?: StringMap;
+    permanentFilters?: filtersType;
     returnOne?: boolean;
 }
 
 export interface SelectFilters {
     limit?: number;
     offset?: number;
-    filters?: AnyMap;
+    filters?: filtersType;
     sort?: string;
     sortDir?: SortDir;
 }

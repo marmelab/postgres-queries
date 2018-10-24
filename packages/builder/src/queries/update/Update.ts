@@ -1,6 +1,11 @@
 import * as signale from 'signale';
 
-import { AnyMap, Config, Query, StringMap } from '../../Configuration';
+import {
+    Config,
+    filters as filtersType,
+    Literal,
+    Query,
+} from '../../Configuration';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
 import { sanitizeParameter } from '../../helpers/SanitizeParameter';
@@ -11,10 +16,10 @@ interface Update extends Config {
     writableCols: string[];
     filterCols: string[];
     returnCols?: string | string[];
-    permanentFilters?: StringMap;
+    permanentFilters?: filtersType;
 }
 
-type QueryFunction = (filters: any, data: AnyMap) => Query;
+type QueryFunction = (filters: any, data: Literal<any>) => Query;
 
 export const update = (
     {

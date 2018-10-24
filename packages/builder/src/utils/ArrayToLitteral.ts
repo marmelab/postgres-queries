@@ -1,4 +1,4 @@
-import Literal from '../interfaces/Literal';
+import { Literal } from '../Configuration';
 
 export const arrayToLitteral = (keys: any, values: any = []) => {
     return keys.reduce(

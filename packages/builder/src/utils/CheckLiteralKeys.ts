@@ -1,4 +1,4 @@
-import Literal from '../interfaces/Literal';
+import { Literal } from '../Configuration';
 
 export const checkLiteralKeys = (keys: string[]) => (
     object: Literal<string | number | boolean>,

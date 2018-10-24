@@ -1,4 +1,4 @@
-import Literal from '../interfaces/Literal';
+import { Literal } from '../Configuration';
 
 export const flatten = <T>(parameters: Literal<T | T[]>): Literal<T> =>
     Object.keys(parameters).reduce((result, key) => {

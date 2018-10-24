@@ -1,11 +1,11 @@
-import { Config, StringMap } from '../../Configuration';
+import { Config, filters } from '../../Configuration';
 import { update } from './Update';
 
 interface UpdateOne extends Config {
     writableCols: string[];
     primaryKey: string | string[];
     returnCols?: string | string[];
-    permanentFilters?: StringMap;
+    permanentFilters?: filters;
 }
 
 export const updateOne = ({

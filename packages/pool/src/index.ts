@@ -43,7 +43,7 @@ function setupClient(client: pg.PoolClient) {
     const linkOne = (querier: any) => (args: Iterable<object>) =>
         namedQuery(querier(...args));
 
-    const link = querier => {
+    const link = (querier: any) => {
         if (typeof querier === 'function') {
             return linkOne(querier);
         }

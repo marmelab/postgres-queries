@@ -1,16 +1,16 @@
 import * as signale from 'signale';
 
-import { Config, Query, StringMap } from '../../Configuration';
+import { Config, filters, Query } from '../../Configuration';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
 import { whereQuery } from '../../helpers/WhereQuery';
 
 interface SelectOne extends Config {
     primaryKey: string | string[];
     returnCols: string[];
-    permanentFilters?: StringMap;
+    permanentFilters?: filters;
 }
 
-type QueryFunction = (raw: StringMap | string) => Query;
+type QueryFunction = (raw: filters | string) => Query;
 
 export const selectOne = ({
     table,

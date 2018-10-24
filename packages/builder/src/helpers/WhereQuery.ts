@@ -1,6 +1,6 @@
 import * as signale from 'signale';
 
-import Literal from '../interfaces/Literal';
+import { Literal } from '../Configuration';
 import List from '../utils/List';
 import Writer from '../utils/Writer';
 
