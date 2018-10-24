@@ -7,7 +7,6 @@ interface BatchUpsert extends Config {
     primaryKey: string[];
     writableCols: string[];
     returnCols?: string[];
-    permanentFilters?: filters;
 }
 
 type QueryFunction = (rows: any[]) => Query;
@@ -17,7 +16,6 @@ export const BatchUpsert = ({
     primaryKey,
     writableCols,
     returnCols = ['*'],
-    permanentFilters = {},
 }: BatchUpsert): QueryFunction => rows => {
     const columns = primaryKey.concat(
         writableCols.filter(f => primaryKey.indexOf(f) === -1),
@@ -28,7 +26,7 @@ export const BatchUpsert = ({
 
     const returning = returnCols.join(', ');
 
-    const setQuery = writableCols.map(col => `${col} = excluded.${col}`);
+    const setQuery = writableCols.map(col => `${col} = EXCLUDED.${col}`);
 
     const values = rows
         .map((_, index) => getValueSubQuery(index + 1))
@@ -36,22 +34,15 @@ export const BatchUpsert = ({
 
     const parameters = getParameter(rows);
 
-    const permanentFiltersKeys = Object.keys(permanentFilters);
-    const where = permanentFiltersKeys.length
-        ? whereQuery(permanentFilters, permanentFiltersKeys).read().value
-        : '';
-
-    const sql = `INSERT INTO ${table}
-(${columns.join(', ')})
+    const sql = `INSERT INTO ${table}(${columns.join(', ')})
 VALUES ${values.join(', ')}
 ON CONFLICT (${primaryKey.join(', ')})
-DO UPDATE SET ${setQuery.join(', ')} ${where}
+DO UPDATE SET ${setQuery.join(', ')}
 RETURNING ${returning}`;
 
     return {
         parameters: {
             ...parameters,
-            ...permanentFilters,
         },
         sql,
     };
