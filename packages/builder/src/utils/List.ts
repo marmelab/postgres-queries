@@ -1,5 +1,5 @@
 /**
- * List is a Monad, an Apllicative and a Traversable
+ * List is a Monad, an Applicative and a Traversable
  * Hold Array of values, and allow to manipulate them with functions
  * see methods
  */

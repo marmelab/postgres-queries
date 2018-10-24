@@ -36,6 +36,18 @@ export default class Writer<T> {
         return { value: this.value, log: this.log };
     }
     /**
+     * Acess the value of the Writer
+     */
+    readValue() {
+        return this.value;
+    }
+    /**
+     * Acess the log of the Writer
+     */
+    readLog() {
+        return this.log;
+    }
+    /**
      * Apply function the values holded by the writer, think like Array.map
      * @param fn the function to apply
      * @return A new Writer with the updated value

@@ -37,31 +37,31 @@ export const getColType = (column, searchableCols) => {
     }
     if (
         column.indexOf('not_') === 0 &&
-        searchableCols.indexOf(column.substr(4)) !== -1
+        searchableCols.indexOf(column.replace('not_', '')) !== -1
     ) {
         return Writer.of('not');
     }
     if (
         column.indexOf('from_') === 0 &&
-        searchableCols.indexOf(column.substr(5)) !== -1
+        searchableCols.indexOf(column.replace('from_', '')) !== -1
     ) {
         return Writer.of('from');
     }
     if (
         column.indexOf('to_') === 0 &&
-        searchableCols.indexOf(column.substr(3)) !== -1
+        searchableCols.indexOf(column.replace('to_', '')) !== -1
     ) {
         return Writer.of('to');
     }
     if (
         column.indexOf('like_') === 0 &&
-        searchableCols.indexOf(column.substr(5)) !== -1
+        searchableCols.indexOf(column.replace('like_', '')) !== -1
     ) {
         return Writer.of('like');
     }
     if (
         column.indexOf('not_like_') === 0 &&
-        searchableCols.indexOf(column.substr(9)) !== -1
+        searchableCols.indexOf(column.replace('not_like_', '')) !== -1
     ) {
         return Writer.of('notLike');
     }
@@ -84,26 +84,29 @@ export const sortQueryType = (filters, searchableCols) => {
 export const getMatch = (col, value, searchableCols) => {
     return !searchableCols.length
         ? null
-        : `(${searchableCols.map(searchableCol => `${searchableCol}::text ILIKE $match`).join(' OR ')})`;
+        : `(${searchableCols
+            .map(searchableCol => `${searchableCol}::text ILIKE $match`)
+            .join(' OR ')
+        })`;
 };
 
 export const getLike = (col, value, searchableCols) => {
-    return `${col.substr(5)}::text ILIKE $${col.replace('.', '__')}`;
+    return `${col.replace('like_', '')}::text ILIKE $${col.replace('.', '__')}`;
 };
 
 export const getNotLike = (col, value, searchableCols) => {
-    return `${col.substr(9)}::text NOT ILIKE $${col.replace('.', '__')}`;
+    return `${col.replace('not_like_', '')}::text NOT ILIKE $${col.replace('.', '__')}`;
 };
 
 export const getFrom = (col, value, searchableCols) => {
-    return `${col.substr(5)}::timestamp >= $${col.replace(
+    return `${col.replace('from_', '')}::timestamp >= $${col.replace(
         '.',
         '__',
     )}::timestamp`;
 };
 
 export const getTo = (col, value, searchableCols) => {
-    return `${col.substr(3)}::timestamp <= $${col.replace(
+    return `${col.replace('to_', '')}::timestamp <= $${col.replace(
         '.',
         '__',
     )}::timestamp`;
@@ -114,7 +117,7 @@ export const getNot = (col, value, searchableCols) => {
         col,
         value,
         true,
-    ).map(value => `${col.substr(4)} ${value}`);
+    ).map(value => `${col.replace('not_', '')} ${value}`);
 };
 export const getQuery = (col, value, searchableCols) => {
     return getColPlaceHolder(col, value, false).map(value => `${col} ${value}`);
