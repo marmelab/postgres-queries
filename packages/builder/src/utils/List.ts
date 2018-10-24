@@ -12,11 +12,9 @@ export default class List<T> {
     constructor(values: ReadonlyArray<T>) {
         this.values = values;
     }
-    // return the internal array
     toArray():ReadonlyArray<T> {
         return this.values;
     }
-    // proxy to Array.concat
     concat(x: T):List<T> {
         return new List(this.values.concat(x));
     }
