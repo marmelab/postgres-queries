@@ -38,7 +38,7 @@ export const BatchUpsert = ({
 
     const permanentFiltersKeys = Object.keys(permanentFilters);
     const where = permanentFiltersKeys.length
-        ? whereQuery(permanentFilters, permanentFiltersKeys)
+        ? whereQuery(permanentFilters, permanentFiltersKeys).read().value
         : '';
 
     const sql = `INSERT INTO ${table}

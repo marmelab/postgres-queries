@@ -1,3 +1,5 @@
+import * as signale from 'signale';
+
 import { Config, Query, StringMap } from '../../Configuration';
 import { batchParameter } from '../../helpers/BatchParameter';
 import { returningQuery } from '../../helpers/ReturningQuery';
@@ -26,13 +28,15 @@ export const batchRemove = ({
     return ids => {
         const cleanIds = ids.map(idSanitizer);
         const parameters = batchParameter(selector)(cleanIds);
-        const where = whereQuery(
+        const { value: where, log } = whereQuery(
             {
                 ...combineLiterals(cleanIds),
                 ...permanentFilters,
             },
             [...selector, ...Object.keys(permanentFilters)],
-        );
+        ).read();
+
+        log.map(signale.debug);
 
         const sql = `DELETE FROM ${table} ${where} ${returning};`;
 

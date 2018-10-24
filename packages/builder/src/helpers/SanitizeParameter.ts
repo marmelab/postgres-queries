@@ -3,7 +3,7 @@ import { curry } from '../utils/Curry';
 import { getColType } from './WhereQuery';
 
 function getTrueColName(colName: string, cols) {
-    switch (getColType(colName, cols)) {
+    switch (getColType(colName, cols).readValue()) {
         case 'query':
             return colName;
         case 'from':
@@ -12,7 +12,7 @@ function getTrueColName(colName: string, cols) {
             return colName.substr(3);
         case 'like':
             return colName.substr(5);
-        case 'not like':
+        case 'notLike':
             return colName.substr(9);
         case 'not':
             return colName.substr(4);

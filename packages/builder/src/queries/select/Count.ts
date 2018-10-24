@@ -1,3 +1,5 @@
+import * as signale from 'signale';
+
 import { AnyMap, Config, Query, StringMap } from '../../Configuration';
 import { whereQuery } from '../../helpers/WhereQuery';
 
@@ -25,7 +27,8 @@ export const count = ({ table, permanentFilters = {} }: Count) => ({
         };
     }
 
-    const where = whereQuery(mergedFilters, identifiers);
+    const { value: where, log } = whereQuery(mergedFilters, identifiers).read();
+    log.map(signale.warn);
     const sql = `SELECT COUNT(*) FROM ${table} ${where};`;
 
     return { sql, parameters: mergedFilters, returnOne: true };

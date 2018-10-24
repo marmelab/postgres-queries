@@ -1,3 +1,5 @@
+import * as signale from 'signale';
+
 import { Config, Query, StringMap } from '../../Configuration';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
 import { whereQuery } from '../../helpers/WhereQuery';
@@ -35,7 +37,8 @@ export const selectOne = ({
             ...permanentFilters,
         });
 
-        const where = whereQuery(parameters, identifiers);
+        const { value: where, log } = whereQuery(parameters, identifiers).read();
+        log.map(signale.warn);
         const sql = `SELECT ${select} FROM ${table} ${where} LIMIT 1`;
 
         return { sql, parameters, returnOne: true };
