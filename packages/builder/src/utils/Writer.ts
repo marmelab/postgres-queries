@@ -12,9 +12,7 @@
  * @method lift transform a function to wrap its return value in a Writer
  */
 export default class Writer<T> {
-    private readonly value: T;
-    private readonly log: any[];
-    static of<T>(value: T):Writer<T> {
+    public static of<T>(value: T): Writer<T> {
         return new Writer(value, []);
     }
     /**
@@ -22,23 +20,25 @@ export default class Writer<T> {
      * @param fn the function to lift
      * @param a new Function applying fn and wrapping its return value in a writer
      */
-    static lift(fn) {
-        return (...args) => Writer.of(fn(...args));
+    public static lift(fn: (...v: any[]) => any) {
+        return (...args: any[]) => Writer.of(fn(...args));
     }
-    constructor(value:T, log:any[] = []) {
+    private readonly value: T;
+    private readonly log: any[];
+    constructor(value: T, log: any[] = []) {
         this.value = value;
         this.log = log;
     }
-    read() {
+    public read() {
         return { value: this.value, log: this.log };
     }
-    readValue() {
+    public readValue() {
         return this.value;
     }
-    readLog() {
+    public readLog() {
         return this.log;
     }
-    map<B>(fn: (v:T) => B):Writer<B> {
+    public map<B>(fn: (v: T) => B): Writer<B> {
         return new Writer(fn(this.value), this.log);
     }
     /**
@@ -46,11 +46,11 @@ export default class Writer<T> {
      * @param other A writer hilding the value to apply
      * @this A writer holding a function
      */
-    ap<A,B>(other:Writer<A>):Writer<B> {
-        return this.chain((fn:((v: A) => B) & T) => other.map(fn));
+    public ap<A, B>(other: Writer<A>): Writer<B> {
+        return this.chain((fn: ((v: A) => B) & T) => other.map(fn));
     }
-    flatten<A>():Writer<A> {
-        const inner = this.value as any as Writer<A>;
+    public flatten<A>(): Writer<A> {
+        const inner = (this.value as any) as Writer<A>;
         return new Writer(inner.value, this.log.concat(inner.log));
     }
     /**
@@ -61,8 +61,8 @@ export default class Writer<T> {
      *     })
      * @param fn A function returning a Writer
      * @return A new Writer holding the value from the nested Writer, and the logs from both
-     * */
-    chain<A>(fn: (v: T) => Writer<A>):Writer<A> {
+     */
+    public chain<A>(fn: (v: T) => Writer<A>): Writer<A> {
         const inner = fn(this.value).read();
         return new Writer(inner.value, this.log.concat(inner.log));
     }

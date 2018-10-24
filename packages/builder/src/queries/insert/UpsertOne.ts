@@ -1,4 +1,4 @@
-import { AnyMap, Config, Query, StringMap } from '../../Configuration';
+import { Config, filters, Literal, Query } from '../../Configuration';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
 import { sanitizeParameter } from '../../helpers/SanitizeParameter';
@@ -9,10 +9,10 @@ interface UpsertOne extends Config {
     primaryKey?: string | string[];
     writableCols: string[];
     returnCols?: string | string[];
-    permanentFilters?: StringMap;
+    permanentFilters?: filters;
 }
 
-type QueryFunction = (data: AnyMap) => Query;
+type QueryFunction = (data: Literal<any>) => Query;
 
 export const upsertOne = ({
     table,
@@ -22,7 +22,7 @@ export const upsertOne = ({
     permanentFilters = {},
 }: UpsertOne): QueryFunction => {
     const returning = returningQuery(returnCols);
-    const primaryKey = [].concat(idCols);
+    const primaryKey = Array.isArray(idCols) ? idCols : [idCols];
 
     return row => {
         const parameters = {
@@ -39,7 +39,10 @@ export const upsertOne = ({
 
         const permanentFiltersKeys = Object.keys(permanentFilters);
         const where = permanentFiltersKeys.length
-            ? ` ${whereQuery(permanentFilters, permanentFiltersKeys).read().value}`
+            ? ` ${
+                  whereQuery(permanentFilters, permanentFiltersKeys).read()
+                      .value
+              }`
             : '';
 
         const sql = `INSERT INTO ${table} (${keys.join(', ')})

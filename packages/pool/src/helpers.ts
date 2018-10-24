@@ -5,25 +5,30 @@ interface ParameterizedQuery {
     parameters: any[];
 }
 
+interface Literal<T> {
+    [key: string]: T;
+}
+
 export const namedToNumericParameter = (
     namedSql: string,
-    namedParameters: object = {},
+    namedParameters: Literal<any> = {},
 ): ParameterizedQuery => {
     const fillableTokens = Object.keys(namedParameters);
-    let matchedTokens = namedSql.match(tokenPattern);
+    const matchedTokens = namedSql.match(tokenPattern);
     if (!matchedTokens) {
         return { sql: namedSql, parameters: [] };
     }
-    matchedTokens = matchedTokens
+    const sanitizedTokens = matchedTokens
         .map(token => token.substring(1)) // Remove leading dollar sign
         .filter((value, index, self) => self.indexOf(value) === index);
 
     const fillTokens = fillableTokens.filter(
-        value => matchedTokens.indexOf(value) > -1,
+        value => sanitizedTokens.indexOf(value) > -1,
     );
+
     const parameters = fillTokens.map(token => namedParameters[token]);
 
-    const unmatchedTokens = matchedTokens.filter(
+    const unmatchedTokens = sanitizedTokens.filter(
         value => fillableTokens.indexOf(value) < 0,
     );
 

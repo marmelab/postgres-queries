@@ -1,6 +1,12 @@
 import * as signale from 'signale';
 
-import { AnyMap, Config, Query, SortDir, StringMap } from '../../Configuration';
+import {
+    Config,
+    filters as filtersType,
+    Literal,
+    Query,
+    SortDir,
+} from '../../Configuration';
 import { sanitizeParameter } from '../../helpers/SanitizeParameter';
 import { whereQuery } from '../../helpers/WhereQuery';
 import { flatten } from '../../utils/Flatten';
@@ -9,17 +15,17 @@ interface Select extends Config {
     primaryKey: string | string[];
     returnCols: string[];
     searchableCols?: string[];
-    specificSorts?: AnyMap;
+    specificSorts?: Literal<any>;
     groupByCols?: string[];
     withQuery?: boolean;
-    permanentFilters?: StringMap;
+    permanentFilters?: filtersType;
     returnOne?: boolean;
 }
 
 export interface SelectFilters {
     limit?: number;
     offset?: number;
-    filters?: AnyMap;
+    filters?: filtersType;
     sort?: string;
     sortDir?: SortDir;
 }
@@ -37,11 +43,19 @@ export const select = ({
     permanentFilters = {},
     returnOne,
 }: Select): QueryFunction => {
-    const primaryKey = [].concat(ids);
-    const selectedCol = returnCols.length ? returnCols.join(', ') : '*';
+    const primaryKey = Array.isArray(ids) ? ids : [ids];
+    const selectedCols = returnCols.length ? returnCols.join(', ') : '*';
 
     return (
-        { limit, offset, filters = {}, sort, sortDir } = { filters: {} },
+        {
+            limit,
+            offset,
+            filters = {},
+            sort,
+            sortDir = 'ASC',
+        }: SelectFilters = {
+            filters: {},
+        },
     ) => {
         const finalFilters = {
             ...filters,
@@ -52,10 +66,13 @@ export const select = ({
             ...Object.keys(permanentFilters),
         ];
 
-        const { value: where, log } = whereQuery(finalFilters, finalSearchableCols).read();
+        const { value: where, log } = whereQuery(
+            finalFilters,
+            finalSearchableCols,
+        ).read();
         log.map(signale.warn);
 
-        let sql = `SELECT ${selectedCol} FROM ${table} ${where}`;
+        let sql = `SELECT ${selectedCols} FROM ${table} ${where}`;
 
         if (groupByCols.length > 0) {
             sql = `${sql} GROUP BY ${groupByCols.join(', ')}`;
@@ -77,7 +94,7 @@ ${sql.trim()}
             const normalizedSort = sort.toLowerCase();
             if (specificSorts && specificSorts.hasOwnProperty(normalizedSort)) {
                 const specificSort = specificSorts[normalizedSort].reduce(
-                    (result, condition, index) =>
+                    (result: string, condition: string, index: number) =>
                         `${result} WHEN '${condition}' THEN ${index + 1}`,
                     `CASE ${normalizedSort}`,
                 );

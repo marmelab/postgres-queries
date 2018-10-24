@@ -1,4 +1,4 @@
-import { AnyMap, Config, Query } from '../../Configuration';
+import { Config, Literal, Query } from '../../Configuration';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { sanitizeParameter } from '../../helpers/SanitizeParameter';
 import { valueSubQuery } from '../../helpers/ValueSubQuery';
@@ -8,7 +8,7 @@ interface InsertOne extends Config {
     returnCols?: string | string[];
 }
 
-type QueryFunction = (data: AnyMap) => Query;
+type QueryFunction = (data: Literal<any>) => Query;
 
 export const insertOne = ({
     table,

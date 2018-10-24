@@ -1,6 +1,6 @@
 import * as signale from 'signale';
 
-import { Config, Query, StringMap } from '../../Configuration';
+import { Config, filters, Literal, Query } from '../../Configuration';
 import { batchParameter } from '../../helpers/BatchParameter';
 import { returningQuery } from '../../helpers/ReturningQuery';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
@@ -10,10 +10,10 @@ import { combineLiterals } from '../../utils/CombineLiterals';
 interface BatchRemove extends Config {
     returnCols: string | string[];
     primaryKey: string | string[];
-    permanentFilters?: StringMap;
+    permanentFilters?: filters;
 }
 
-type QueryFunction = (ids: Array<string | number | StringMap>) => Query;
+type QueryFunction = (ids: Array<string | number | Literal<any>>) => Query;
 
 export const batchRemove = ({
     table,
@@ -22,7 +22,7 @@ export const batchRemove = ({
     permanentFilters = {},
 }: BatchRemove): QueryFunction => {
     const returning = returningQuery(returnCols);
-    const selector = [].concat(primaryKey);
+    const selector = Array.isArray(primaryKey) ? primaryKey : [primaryKey];
     const idSanitizer = sanitizeIdentifier(selector);
 
     return ids => {

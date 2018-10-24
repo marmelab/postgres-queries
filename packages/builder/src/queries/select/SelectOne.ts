@@ -1,16 +1,16 @@
 import * as signale from 'signale';
 
-import { Config, Query, StringMap } from '../../Configuration';
+import { Config, filters, Query } from '../../Configuration';
 import { sanitizeIdentifier } from '../../helpers/SanitizeIdentifier';
 import { whereQuery } from '../../helpers/WhereQuery';
 
 interface SelectOne extends Config {
     primaryKey: string | string[];
     returnCols: string[];
-    permanentFilters?: StringMap;
+    permanentFilters?: filters;
 }
 
-type QueryFunction = (raw: StringMap | string) => Query;
+type QueryFunction = (raw: filters | string) => Query;
 
 export const selectOne = ({
     table,
@@ -21,7 +21,7 @@ export const selectOne = ({
     const select = returnCols.join(', ');
 
     const identifiers = [
-        ...[].concat(primaryKey),
+        ...(Array.isArray(primaryKey) ? primaryKey : [primaryKey]),
         ...Object.keys(permanentFilters),
     ];
 
@@ -37,7 +37,10 @@ export const selectOne = ({
             ...permanentFilters,
         });
 
-        const { value: where, log } = whereQuery(parameters, identifiers).read();
+        const { value: where, log } = whereQuery(
+            parameters,
+            identifiers,
+        ).read();
         log.map(signale.warn);
         const sql = `SELECT ${select} FROM ${table} ${where} LIMIT 1`;
 

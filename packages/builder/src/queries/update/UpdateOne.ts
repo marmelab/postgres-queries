@@ -1,11 +1,11 @@
-import { Config, StringMap } from '../../Configuration';
+import { Config, filters } from '../../Configuration';
 import { update } from './Update';
 
 interface UpdateOne extends Config {
     writableCols: string[];
     primaryKey: string | string[];
     returnCols?: string | string[];
-    permanentFilters?: StringMap;
+    permanentFilters?: filters;
 }
 
 export const updateOne = ({
@@ -15,7 +15,7 @@ export const updateOne = ({
     returnCols,
     permanentFilters = {},
 }: UpdateOne) => {
-    const filterCols = [].concat(primaryKey);
+    const filterCols = Array.isArray(primaryKey) ? primaryKey : [primaryKey];
 
     return update(
         { table, writableCols, filterCols, returnCols, permanentFilters },
