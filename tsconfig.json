@@ -6,6 +6,6 @@
         "@postgres-queries/*": ["./*/src"]
       },
       "strictNullChecks": true,
-      "noImplicitAny": true,
+      "noImplicitAny": true
     }
   }

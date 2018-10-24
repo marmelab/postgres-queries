@@ -94,7 +94,7 @@ ${sql.trim()}
             const normalizedSort = sort.toLowerCase();
             if (specificSorts && specificSorts.hasOwnProperty(normalizedSort)) {
                 const specificSort = specificSorts[normalizedSort].reduce(
-                    (result, condition, index) =>
+                    (result: string, condition: string, index: number) =>
                         `${result} WHEN '${condition}' THEN ${index + 1}`,
                     `CASE ${normalizedSort}`,
                 );
