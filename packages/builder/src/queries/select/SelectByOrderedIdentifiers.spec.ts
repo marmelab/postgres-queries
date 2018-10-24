@@ -22,4 +22,26 @@ ON table.id::varchar=x.id
 ORDER BY x.ordering;`,
         });
     });
+
+    it('should work with array of primaryKey by using first key as identifier', () => {
+        const selectQuery = selectByOrderedIdentifiers({
+            primaryKey: ['id', 'uid'],
+            returnCols: ['cola', 'colb'],
+            table: 'table',
+        });
+
+        expect(selectQuery([1, 2])).toEqual({
+            parameters: {
+                id1: 1,
+                id2: 2,
+            },
+            sql: `SELECT table.cola, table.colb
+FROM table
+JOIN (
+VALUES ($id1, 1), ($id2, 2)
+) AS x (id, ordering)
+ON table.id::varchar=x.id
+ORDER BY x.ordering;`,
+        });
+    });
 });

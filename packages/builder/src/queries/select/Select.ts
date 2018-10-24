@@ -38,7 +38,7 @@ export const select = ({
     returnOne,
 }: Select): QueryFunction => {
     const primaryKey = [].concat(ids);
-    const select = returnCols.length ? returnCols.join(', ') : '*';
+    const selectedCol = returnCols.length ? returnCols.join(', ') : '*';
 
     return (
         { limit, offset, filters = {}, sort, sortDir } = { filters: {} },
@@ -55,7 +55,7 @@ export const select = ({
         const { value: where, log } = whereQuery(finalFilters, finalSearchableCols).read();
         log.map(signale.warn);
 
-        let sql = `SELECT ${select} FROM ${table} ${where}`;
+        let sql = `SELECT ${selectedCol} FROM ${table} ${where}`;
 
         if (groupByCols.length > 0) {
             sql = `${sql} GROUP BY ${groupByCols.join(', ')}`;
