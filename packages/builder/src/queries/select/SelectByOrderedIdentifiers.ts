@@ -14,6 +14,9 @@ export const selectByOrderedIdentifiers = ({
     primaryKey,
     returnCols = ['*'],
 }: SelectByOrderedIdentifiers): QueryFunction => values => {
+    const identifierName = Array.isArray(primaryKey)
+        ? primaryKey[0]
+        : primaryKey;
     if (!Array.isArray(values)) {
         throw new Error(
             'selectByOrderedIdentifiers values parameter should be an array',
@@ -26,15 +29,15 @@ export const selectByOrderedIdentifiers = ({
 FROM ${table}
 JOIN (
 VALUES ${values
-        .map((row, index) => `($${primaryKey}${index + 1}, ${index + 1})`)
+        .map((row, index) => `($${identifierName}${index + 1}, ${index + 1})`)
         .join(', ')}
-) AS x (${primaryKey}, ordering)
-ON ${table}.${primaryKey}::varchar=x.${primaryKey}
+) AS x (${identifierName}, ordering)
+ON ${table}.${identifierName}::varchar=x.${identifierName}
 ORDER BY x.ordering;`;
 
     const parameters = flatten(
-        sanitizeParameter([primaryKey], {
-            [Array.isArray(primaryKey) ? primaryKey[0] : primaryKey]: values,
+        sanitizeParameter([identifierName], {
+            [identifierName]: values,
         }),
     );
 
