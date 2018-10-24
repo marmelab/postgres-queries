@@ -4,6 +4,7 @@
       "baseUrl": "./packages",
       "paths": {
         "@postgres-queries/*": ["./*/src"]
-      }
+      },
+      "strictNullChecks": true
     }
   }

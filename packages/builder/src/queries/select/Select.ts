@@ -37,11 +37,19 @@ export const select = ({
     permanentFilters = {},
     returnOne,
 }: Select): QueryFunction => {
-    const primaryKey = [].concat(ids);
-    const selectedCol = returnCols.length ? returnCols.join(', ') : '*';
+    const primaryKey = Array.isArray(ids) ? ids : [ids];
+    const selectedCols = returnCols.length ? returnCols.join(', ') : '*';
 
     return (
-        { limit, offset, filters = {}, sort, sortDir } = { filters: {} },
+        {
+            limit,
+            offset,
+            filters = {},
+            sort,
+            sortDir = 'ASC',
+        }: SelectFilters = {
+            filters: {},
+        },
     ) => {
         const finalFilters = {
             ...filters,
@@ -58,7 +66,7 @@ export const select = ({
         ).read();
         log.map(signale.warn);
 
-        let sql = `SELECT ${selectedCol} FROM ${table} ${where}`;
+        let sql = `SELECT ${selectedCols} FROM ${table} ${where}`;
 
         if (groupByCols.length > 0) {
             sql = `${sql} GROUP BY ${groupByCols.join(', ')}`;

@@ -58,10 +58,10 @@ describe('List', () => {
         });
 
         it('composition', async () => {
-            const u = List.of(v => 'u');
-            const v = List.of(v => v + 'v');
+            const u = List.of(() => 'u');
+            const v = List.of(value => value + 'v');
             const w = List.of('w');
-            const compose = f1 => f2 => v => f1(f2(v));
+            const compose = f1 => f2 => value => f1(f2(value));
             await expect(u.ap(v.ap(w))).toEqual(
                 List.of(compose)
                     .ap(u)

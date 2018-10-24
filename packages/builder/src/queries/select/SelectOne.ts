@@ -21,7 +21,7 @@ export const selectOne = ({
     const select = returnCols.join(', ');
 
     const identifiers = [
-        ...[].concat(primaryKey),
+        ...(Array.isArray(primaryKey) ? primaryKey : [primaryKey]),
         ...Object.keys(permanentFilters),
     ];
 

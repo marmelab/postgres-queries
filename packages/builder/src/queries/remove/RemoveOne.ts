@@ -15,7 +15,7 @@ export const removeOne = ({
     returnCols,
     permanentFilters = {},
 }: RemoveOne): QueryFunction => {
-    const filterCols = [].concat(primaryKey);
+    const filterCols = Array.isArray(primaryKey) ? primaryKey : [primaryKey];
 
     return remove(
         {

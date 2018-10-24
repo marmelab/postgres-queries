@@ -27,7 +27,7 @@ export const update = (
     returnOne = false,
 ): QueryFunction => {
     const filterCols = [
-        ...[].concat(selectors),
+        ...(Array.isArray(selectors) ? selectors : [selectors]),
         ...Object.keys(permanentFilters),
     ];
 
