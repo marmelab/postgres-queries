@@ -60,7 +60,7 @@ export default class List<T> {
      * @param fn the transformation being applied to the applicative
      * @return Applicative(List)
      */
-    public traverse(of, fn) {
+    public traverse(of: (v: any) => any, fn: (v: any) => any) {
         return this.values.reduce(swap(fn), of(new List([])));
     }
     /**
@@ -70,14 +70,14 @@ export default class List<T> {
      * @param of the applicative constructor
      * @return Applicative(List)
      */
-    public sequence(of) {
-        return this.traverse(of, v => v);
+    public sequence(of: any) {
+        return this.traverse(of, (v: any) => v);
     }
 }
 
-const concat = values => value => value.concat(values);
+const concat = <T>(values: T[]) => (value: T[]) => value.concat(values);
 
-const swap = fn => (traversable, applicative) =>
+const swap = (fn: (v: any) => any) => (traversable: any, applicative: any) =>
     fn(applicative)
         .map(concat)
         .ap(traversable);

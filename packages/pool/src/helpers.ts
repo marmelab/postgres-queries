@@ -5,9 +5,13 @@ interface ParameterizedQuery {
     parameters: any[];
 }
 
+interface Literal<T> {
+    [key: string]: T;
+}
+
 export const namedToNumericParameter = (
     namedSql: string,
-    namedParameters: object = {},
+    namedParameters: Literal<any> = {},
 ): ParameterizedQuery => {
     const fillableTokens = Object.keys(namedParameters);
     const matchedTokens = namedSql.match(tokenPattern);
@@ -21,9 +25,10 @@ export const namedToNumericParameter = (
     const fillTokens = fillableTokens.filter(
         value => sanitizedTokens.indexOf(value) > -1,
     );
+
     const parameters = fillTokens.map(token => namedParameters[token]);
 
-    const unmatchedTokens = matchedTokens.filter(
+    const unmatchedTokens = sanitizedTokens.filter(
         value => fillableTokens.indexOf(value) < 0,
     );
 

@@ -22,7 +22,7 @@ export const batchRemove = ({
     permanentFilters = {},
 }: BatchRemove): QueryFunction => {
     const returning = returningQuery(returnCols);
-    const selector = [].concat(primaryKey);
+    const selector = Array.isArray(primaryKey) ? primaryKey : [primaryKey];
     const idSanitizer = sanitizeIdentifier(selector);
 
     return ids => {

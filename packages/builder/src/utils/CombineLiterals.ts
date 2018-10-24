@@ -1,4 +1,8 @@
-export const combineLiterals = literals =>
+import Literal from '../interfaces/Literal';
+
+export const combineLiterals = (
+    literals: Array<Literal<any>>,
+): Literal<any[]> =>
     literals.reduce(
         (result, literal) => ({
             ...result,

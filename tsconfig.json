@@ -5,6 +5,7 @@
       "paths": {
         "@postgres-queries/*": ["./*/src"]
       },
-      "strictNullChecks": true
+      "strictNullChecks": true,
+      "noImplicitAny": true,
     }
   }

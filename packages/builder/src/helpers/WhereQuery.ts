@@ -1,10 +1,11 @@
 import * as signale from 'signale';
 
+import Literal from '../interfaces/Literal';
 import List from '../utils/List';
 import Writer from '../utils/Writer';
 
 export const getColPlaceHolder = (
-    column,
+    column: string,
     value: any,
     not: boolean | null = false,
 ) => {
@@ -27,7 +28,10 @@ export const getColPlaceHolder = (
         case 'IN':
             return Writer.of(
                 `${not ? 'NOT ' : ''}IN (${value
-                    .map((_, index) => `$${normalizedColumn}${index + 1}`)
+                    .map(
+                        (_: any, index: number) =>
+                            `$${normalizedColumn}${index + 1}`,
+                    )
                     .join(', ')})`,
             );
         default:
@@ -35,7 +39,7 @@ export const getColPlaceHolder = (
     }
 };
 
-export const getColType = (column, searchableCols) => {
+export const getColType = (column: string, searchableCols: string[]) => {
     if (!searchableCols.length) {
         return new Writer('discarded', [
             {
@@ -85,7 +89,10 @@ export const getColType = (column, searchableCols) => {
     return new Writer('discarded', [{ type: 'ignoring', message: column }]);
 };
 
-export const sortQueryType = (filters, searchableCols) => {
+export const sortQueryType = (
+    filters: Literal<any>,
+    searchableCols: string[],
+) => {
     return new List(Object.keys(filters)).map(col => {
         const typeWriter = getColType(col, searchableCols);
 
@@ -97,7 +104,7 @@ export const sortQueryType = (filters, searchableCols) => {
     });
 };
 
-export const getMatch = (col, value, searchableCols) => {
+export const getMatch = (col: string, value: any, searchableCols: string[]) => {
     return !searchableCols.length
         ? null
         : `(${searchableCols
@@ -105,37 +112,45 @@ export const getMatch = (col, value, searchableCols) => {
               .join(' OR ')})`;
 };
 
-export const getLike = (col, value, searchableCols) => {
+export const getLike = (col: string, value: any, searchableCols: string[]) => {
     return `${col.replace('like_', '')}::text ILIKE $${col.replace('.', '__')}`;
 };
 
-export const getNotLike = (col, value, searchableCols) => {
+export const getNotLike = (
+    col: string,
+    value: any,
+    searchableCols: string[],
+) => {
     return `${col.replace('not_like_', '')}::text NOT ILIKE $${col.replace(
         '.',
         '__',
     )}`;
 };
 
-export const getFrom = (col, value, searchableCols) => {
+export const getFrom = (col: string, value: any, searchableCols: string[]) => {
     return `${col.replace('from_', '')}::timestamp >= $${col.replace(
         '.',
         '__',
     )}::timestamp`;
 };
 
-export const getTo = (col, value, searchableCols) => {
+export const getTo = (col: string, value: any, searchableCols: string[]) => {
     return `${col.replace('to_', '')}::timestamp <= $${col.replace(
         '.',
         '__',
     )}::timestamp`;
 };
 
-export const getNot = (col, value, searchableCols) => {
+export const getNot = (
+    col: string,
+    value: any,
+    searchableCols: string[],
+): Writer<string> => {
     return getColPlaceHolder(col, value, true).map(
         v => `${col.replace('not_', '')} ${v}`,
     );
 };
-export const getQuery = (col, value, searchableCols) => {
+export const getQuery = (col: string, value: any, searchableCols: string[]) => {
     return getColPlaceHolder(col, value, false).map(v => `${col} ${v}`);
 };
 
@@ -143,7 +158,24 @@ export const getResult = (whereParts = []) => {
     return whereParts.length ? `WHERE ${whereParts.join(' AND ')}` : '';
 };
 
-const wherePartsBuilder = {
+type getPartFn = (
+    col: string,
+    value: any,
+    searchableCols: string[],
+) => Writer<string>;
+
+interface WherePartsBuilder {
+    match: getPartFn;
+    from: getPartFn;
+    to: getPartFn;
+    like: getPartFn;
+    notLike: getPartFn;
+    not: getPartFn;
+    query: getPartFn;
+    [key: string]: getPartFn;
+}
+
+const wherePartsBuilder: WherePartsBuilder = {
     match: Writer.lift(getMatch),
     from: Writer.lift(getFrom),
     to: Writer.lift(getTo),
@@ -153,7 +185,14 @@ const wherePartsBuilder = {
     query: getQuery,
 };
 
-export const whereQuery = (filters, searchableCols) => {
+type logType = 'warn' | 'ignoring' | 'no searchable';
+
+interface Log {
+    type: logType;
+    message: string;
+}
+
+export const whereQuery = (filters: Literal<any>, searchableCols: string[]) => {
     if (!searchableCols.length) {
         return new Writer('', [
             {
@@ -178,24 +217,24 @@ export const whereQuery = (filters, searchableCols) => {
         .sequence(Writer.of) // convert List([Writer(value), Writer(value)]) to Writer(List([value, value]))
         .read(); // And now read get executed for all value in the List merging all log and all values. It's mathemagic!
 
-    const ignoredColumns = log.filter(({ type }) => type === 'ignoring');
+    const ignoredColumns = log.filter(({ type }: Log) => type === 'ignoring');
 
-    log.filter(({ type }) => type === 'warn').map(({ message }) =>
+    log.filter(({ type }: Log) => type === 'warn').map(({ message }: Log) =>
         signale.warn(message),
     );
 
     return new Writer(
-        getResult(whereParts.toArray().filter(v => v)),
+        getResult(whereParts.toArray().filter((v: string) => v)),
         [
             ignoredColumns.length && {
                 type: 'ignoring',
                 message: `Ignoring columns: [${ignoredColumns
-                    .map(({ message }) => message)
+                    .map(({ message }: Log) => message)
                     .join(', ')}]. Allowed columns: [${searchableCols.join(
                     ', ',
                 )}]`,
             },
-            log.find(({ type }) => type === 'no searchable'),
+            log.find(({ type }: Log) => type === 'no searchable'),
         ].filter(v => v),
     );
 };

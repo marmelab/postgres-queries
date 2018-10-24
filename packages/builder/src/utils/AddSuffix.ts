@@ -1,4 +1,6 @@
-export const addSuffix = (object, suffix) =>
+import Literal from '../interfaces/Literal';
+
+export const addSuffix = (object: Literal<any>, suffix: string | number) =>
     Object.keys(object).reduce(
         (result, key) => ({
             ...result,

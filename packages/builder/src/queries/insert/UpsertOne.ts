@@ -22,7 +22,7 @@ export const upsertOne = ({
     permanentFilters = {},
 }: UpsertOne): QueryFunction => {
     const returning = returningQuery(returnCols);
-    const primaryKey = [].concat(idCols);
+    const primaryKey = Array.isArray(idCols) ? idCols : [idCols];
 
     return row => {
         const parameters = {

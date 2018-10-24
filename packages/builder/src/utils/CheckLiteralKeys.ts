@@ -1,4 +1,8 @@
-export const checkLiteralKeys = (keys: any[]) => object => {
+import Literal from '../interfaces/Literal';
+
+export const checkLiteralKeys = (keys: string[]) => (
+    object: Literal<string | number | boolean>,
+) => {
     if (
         Object.keys(object).length !== keys.length ||
         Object.keys(object).some(

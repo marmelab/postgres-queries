@@ -1,8 +1,9 @@
+import Literal from '../interfaces/Literal';
 import { arrayToLitteral } from '../utils/ArrayToLitteral';
 import { curry } from '../utils/Curry';
 import { getColType } from './WhereQuery';
 
-function getTrueColName(colName: string, cols) {
+function getTrueColName(colName: string, cols: string[]) {
     switch (getColType(colName, cols).readValue()) {
         case 'query':
             return colName;
@@ -21,7 +22,12 @@ function getTrueColName(colName: string, cols) {
     }
 }
 
-function sanitizeParameterFunc(rawCols, parameters) {
+function sanitizeParameterFunc(
+    rawCols: Literal<string> | string[],
+    parameters: Literal<
+        string | number | boolean | string[] | number[] | boolean[]
+    >,
+) {
     const cols = Array.isArray(rawCols)
         ? arrayToLitteral(rawCols, undefined)
         : rawCols;

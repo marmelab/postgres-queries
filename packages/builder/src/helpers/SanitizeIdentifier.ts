@@ -4,10 +4,10 @@ import { ensureIsSet } from '../utils/EnsureIsSet';
 import { pipe } from '../utils/Pipe';
 import { sanitizeParameter } from './SanitizeParameter';
 
-export const normalize = primaryKey => id =>
+export const normalize = (primaryKey: string[]) => (id: string | object) =>
     typeof id === 'object' ? id : { [primaryKey[0]]: id };
 
-export const sanitizeIdentifierFunc = (primaryKey, id) => {
+export const sanitizeIdentifierFunc = (primaryKey: string[], id: string) => {
     try {
         return pipe(
             ensureIsSet,

@@ -2,10 +2,10 @@ import { addSuffix } from '../utils/AddSuffix';
 import { arrayToLitteral } from '../utils/ArrayToLitteral';
 import { sanitizeParameter } from './SanitizeParameter';
 
-export const batchParameter = cols => {
+export const batchParameter = (cols: string[]) => {
     const sanitize = sanitizeParameter(arrayToLitteral(cols, null));
 
-    return rows =>
+    return (rows: object[]) =>
         rows
             .map(sanitize)
             .map((row, index) => addSuffix(row, index + 1))
