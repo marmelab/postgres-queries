@@ -1,0 +1,251 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+<head>
+    <title>React-admin - Documentation</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/syntax.css">
+    <link rel="stylesheet" href="css/prism.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/octicons/4.4.0/font/octicons.css">
+</head>
+
+<body>
+    <div class="book with-summary font-size-2 font-family-1">
+        <div id="book-summary" class="book-summary">
+            <nav role="navigation">
+                <ul class="summary">
+                    <li class="header">Table of Contents</li>
+                    <li class="chapter ">
+                        <a href="./index.html">
+                            <b>1.</b> Read Me
+                        </a>
+                    </li>
+                    <li class="chapter ">
+                        <a href="./pool.html">
+                            <b>2.</b> Pool
+                        </a>
+                        <ul class="articles" style="display:none" >
+                            <li class="chapter">
+                                <a href="#connection">
+                                    <code>Connection</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#namedQuery">
+                                    <code>namedQuery</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#link">
+                                    <code>link</code>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="header">Query Builder</li>
+                    <li class="chapter ">
+                        <a href="./queryBuilder.html">
+                            <b>1.</b> Basic principe
+                        </a>
+                    </li>
+                    <li class="chapter ">
+                        <a href="./configuration.html">
+                            <b>2.</b> Configuration
+                        </a>
+                        <ul class="articles" style="display:none" >
+                            <li class="chapter">
+                                <a href="#table">
+                                    <code>Table</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#primaryKey">
+                                    <code>primaryKey</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#returnCols">
+                                    <code>returnCols</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#writableCols">
+                                    <code>writableCols</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#searchableCols">
+                                    <code>searchableCols</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#specificSorts">
+                                    <code>specificSorts</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#groupByCols">
+                                    <code>groupByCols</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#withQuery">
+                                    <code>withQuery</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#permanentFilters">
+                                    <code>permanentFilters</code>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="chapter ">
+                        <a href="./builderList.html">
+                            <b>2.</b> All the query builders
+                        </a>
+                        <ul class="articles" style="display:none" >
+                            <li class="chapter">
+                                <a href="#selectOne">
+                                    <code>selectOne</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#select">
+                                    <code>select</code>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div id="book-body" class="book-body">
+            <div class="body-inner">
+                <div class="page-wrapper" tabindex="-1" role="main">
+                    <div class="page-inner">
+
+                        <div id="book-search-results">
+                            <div class="search-noresults">
+
+                                <section class="normal markdown-section">
+
+                                    <h1 id="pool">Pool</h1>
+<p>Extend <a href="https://github.com/brianc/node-pg-pool">node-pg-pool</a>
+Allow to <a href="#connection">connect</a> to postgresql and execute query.</p>
+
+<p>It adds:</p>
+<ul>
+  <li><a href="#client.namedQuery">namedQuery</a></li>
+  <li><a href="#client.link">link</a></li>
+</ul>
+
+<h2 id="connection"><code class="highlighter-rouge">Connection</code></h2>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Pool</span> <span class="k">from</span> <span class="s1">'postgres-queries/pool'</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">clientOptions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">user</span><span class="p">,</span>
+    <span class="nx">password</span><span class="p">,</span>
+    <span class="nx">database</span><span class="p">,</span>
+    <span class="nx">host</span><span class="p">,</span>
+    <span class="nx">port</span>
+<span class="p">};</span>
+<span class="kd">const</span> <span class="nx">poolingOptions</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">max</span><span class="p">,</span> <span class="c1">// Max number of clients to create (defaults to 10)</span>
+    <span class="nx">idleTimeoutMillis</span> <span class="c1">// how long a client is allowed to remain idle before being closed (defaults to 30 000 ms)</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">pool</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Pool</span><span class="p">(</span><span class="nx">clientOptions</span><span class="p">,</span> <span class="nx">poolingOptions</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="getting-client-with-promise">Getting client with promise</h3>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">pool</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pgPool</span><span class="p">();</span>
+<span class="nx">pool</span><span class="p">.</span><span class="nx">connect</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">client</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// use the client</span>
+<span class="p">});</span>
+
+<span class="c1">// async/await</span>
+<span class="p">(</span><span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">pool</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">pgPool</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">pool</span><span class="p">.</span><span class="nx">connect</span><span class="p">();</span>
+<span class="p">})();</span>
+</code></pre></div></div>
+
+<h2 id="clientnamedquery"><code class="highlighter-rouge">client.namedQuery</code></h2>
+
+<p>The postgres-queries/pool allow you to execute named queries.</p>
+
+<p>Normally to avoid sql injection, we use numeric placeholder for parameters</p>
+
+<p>sql:</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">client</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span>
+    <span class="s1">'SELECT * FROM user WHERE id=$1 AND password=$2;'</span><span class="p">,</span>
+    <span class="p">[</span><span class="nx">id</span><span class="p">,</span> <span class="nx">password</span><span class="p">]</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Then id and password will then be properly sanitized by the client.
+But you have to keep track of the order, and this can become hard to work with.</p>
+
+<p>postgres-queries/pool, support named query.
+This allow us to name the parameter</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">client</span><span class="p">.</span><span class="nx">namedQuery</span><span class="p">({</span>
+    <span class="na">sql</span><span class="p">:</span> <span class="s1">'SELECT * FROM user WHERE id=$id AND password=$password;'</span><span class="p">,</span>
+    <span class="na">parameters</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">id</span><span class="p">:</span> <span class="s1">'id'</span><span class="p">,</span>
+        <span class="na">password</span><span class="p">:</span> <span class="s1">'password'</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h3 id="api">api</h3>
+<p>It takes a literal with the following keys</p>
+
+<ul>
+  <li>sql: the sql string</li>
+  <li>parameters: a literal <code class="highlighter-rouge">{ parameterName: parameterValue }</code> to inject in the sql.</li>
+  <li>returnOne: Optional boolean, if set to true, returns only the first result instead of an array.</li>
+</ul>
+
+<h2 id="clientlink"><code class="highlighter-rouge">client.link</code></h2>
+<p>Even if it’s good to separate the code to build the query from the code that execute them. At one time, we want to link the two.
+<code class="highlighter-rouge">client.link</code> links a queryBuilder function to the client so that it executes the query directly.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">selectOneById</span> <span class="o">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">link</span><span class="p">(</span><span class="nx">selectOneById</span><span class="p">);</span>
+<span class="kr">await</span> <span class="nx">selectOneById</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// create and execute the query in one call.</span>
+</code></pre></div></div>
+
+<p>client.link takes either a single configured queryBuilder, or a literal of several of them.</p>
+
+
+
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+            ga('create', 'UA-46201426-1', 'auto');
+            ga('send', 'pageview');
+        </script>
+        <script src="js/prism.js"></script>
+</body>
+
+</html>
