@@ -1,7 +1,7 @@
 import { BatchUpsert } from './BatchUpsert';
 
 describe('QUERY batchUpsert', () => {
-    it('shoul generate sql and parameter for batchUpserting given rows', () => {
+    it('should generate sql and parameter for batchUpserting given rows', () => {
         const batchUpsertQuery = BatchUpsert({
             table: 'table',
             primaryKey: ['id'],
