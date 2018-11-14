@@ -22,7 +22,7 @@ It adds:
 - a link helper to link a query builder to the client.
 
 ## Query Builder
-The main idea behind the query builder is to be able to just give a configuration object:
+The main idea behind the query builder is to be able build a query thanks to a configuration object:
 - the name of a table
 - its primary key(s)
 - the columns we want to read
