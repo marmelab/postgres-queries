@@ -1,27 +1,9 @@
-# postgres-queries
+---
+layout: default
+title: "Query Builder Introduction"
+---
 
-Utility to generate and execute postgresql queries with ease.
-
-## Install
-
-`npm install --save postgres-queries`
-
-## Introduction
-Creating query and executing them are two separate concerns. And thus postgres-queries is divided in two parts:
-- The pool, that allows to connect to the postgres database and execute query.
-- The query builders (insertOne, selectOne, etc..) that allows to generate sql, and the corresponding parameters.
-
-## Documentation
-go to [https://marmelab.com/postgres-queries/](https://marmelab.com/postgres-queries/)
-
-## Pool
-Extend [node-pg-pool](https://github.com/brianc/node-pg-pool)
-Allow to connect to postgresql and execute query
-It adds:
-- namedQuery
-- a link helper to link a query builder to the client.
-
-## Query Builder
+# Introduction
 The main idea behind the query builder is to be able to just give a configuration object:
 - the name of a table
 - its primary key(s)
@@ -32,7 +14,7 @@ And get a function asking for the query parameter:
 - id
 - data object
 
-And returning queryData that can be directly passed to the `client.namedQuery` method.
+And returning queryData that can be directly passed to the [`client.namedQuery`]() method.
 
 Some builder even allows to create several builder at once.
 
@@ -138,3 +120,8 @@ userQueries.countAll();
     sql: `SELECT COUNT(*) FROM user;`,
 }
 ```
+
+And all this get properly sanitized. You cannot set value to column not in writableCols for example.
+
+For a list of all Query builder go to [Query Builder List](queryBuilder.html)
+For details about the configurations go to [Query Builder Configuration](configuration.html)

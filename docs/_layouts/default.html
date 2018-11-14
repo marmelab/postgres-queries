@@ -2,7 +2,7 @@
 <html lang="en-US">
 
 <head>
-    <title>React-admin - {{ page.title }}</title>
+    <title>postgres-queries - {{ page.title }}</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -29,37 +29,104 @@
                             <b>1.</b> Read Me
                         </a>
                     </li>
-                    <li class="chapter {% if page.path == 'Pool.md' %}active{% endif %}">
+                    <li class="chapter {% if page.path == 'pool.md' %}active{% endif %}">
                         <a href="./pool.html">
                             <b>2.</b> Pool
                         </a>
-                        <ul class="articles" {% if page.path !='Pool.md' %}style="display:none" {% endif %}>
+                        <ul class="articles" {% if page.path !='pool.md' %}style="display:none" {% endif %}>
                             <li class="chapter">
                                 <a href="#connection">
                                     <code>Connection</code>
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#namedQuery">
+                                <a href="#clientnamedquery">
                                     <code>namedQuery</code>
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#link">
+                                <a href="#clientlink">
                                     <code>link</code>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     <li class="header">Query Builder</li>
-                    <li class="chapter {% if page.path == 'queryBuilder.md' %}active{% endif %}">
-                        <a href="./queryBuilder.html">
-                            <b>1.</b> Basic principe
+                    <li class="chapter {% if page.path == 'queryBuilderIntroduction.md' %}active{% endif %}">
+                        <a href="./queryBuilderIntroduction.html">
+                            <b>1.</b> Introduction
                         </a>
+                    </li>
+                    <li class="chapter {% if page.path == 'builderList.md' %}active{% endif %}">
+                        <a href="./queryBuilder.html">
+                            <b>2.</b> Query builder list
+                        </a>
+                        <ul class="articles" {% if page.path !='queryBuilder.md' %}style="display:none" {% endif %}>
+                            <li class="chapter">
+                                <a href="#crud">
+                                    <code>Crud</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#selectone">
+                                    <code>SelectOne</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#select">
+                                    <code>Select</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#countall">
+                                    <code>CountAll</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#update">
+                                    <code>Update</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#updateone">
+                                    <code>UpdateOne</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#remove">
+                                    <code>Remove</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#removeone">
+                                    <code>RemoveOne</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#batchremove">
+                                    <code>BatchRemove</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#upsertone">
+                                    <code>UpsertOne</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#batchupsert">
+                                    <code>BatchUpsert</code>
+                                </a>
+                            </li>
+                            <li class="chapter">
+                                <a href="#selectbyorderedidentifiers">
+                                    <code>SelectByOrderedIdentifiers</code>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="chapter {% if page.path == 'configuration.md' %}active{% endif %}">
                         <a href="./configuration.html">
-                            <b>2.</b> Configuration
+                            <b>3.</b> Configuration
                         </a>
                         <ul class="articles" {% if page.path !='configuration.md' %}style="display:none" {% endif %}>
                             <li class="chapter">
@@ -68,60 +135,43 @@
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#primaryKey">
+                                <a href="#primarykey">
                                     <code>primaryKey</code>
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#returnCols">
+                                <a href="#returncols">
                                     <code>returnCols</code>
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#writableCols">
+                                <a href="#writablecols">
                                     <code>writableCols</code>
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#searchableCols">
+                                <a href="#searchablecols">
                                     <code>searchableCols</code>
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#specificSorts">
+                                <a href="#specificsorts">
                                     <code>specificSorts</code>
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#groupByCols">
+                                <a href="#groupbycols">
                                     <code>groupByCols</code>
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#withQuery">
+                                <a href="#withquery">
                                     <code>withQuery</code>
                                 </a>
                             </li>
                             <li class="chapter">
-                                <a href="#permanentFilters">
+                                <a href="#permanentfilters">
                                     <code>permanentFilters</code>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="chapter {% if page.path == 'builderList.md' %}active{% endif %}">
-                        <a href="./builderList.html">
-                            <b>2.</b> All the query builders
-                        </a>
-                        <ul class="articles" {% if page.path !='queryBuilder.md' %}style="display:none" {% endif %}>
-                            <li class="chapter">
-                                <a href="#selectOne">
-                                    <code>selectOne</code>
-                                </a>
-                            </li>
-                            <li class="chapter">
-                                <a href="#select">
-                                    <code>select</code>
                                 </a>
                             </li>
                         </ul>

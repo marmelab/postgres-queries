@@ -1,123 +1,416 @@
 ---
 layout: default
-title: "Documentation"
+title: "Query Builder"
 ---
 # Query Builder
-The main idea behind the query builder is to be able to just give a configuration object:
-- the name of a table
-- its primary key(s)
-- the columns we want to read
-- the columns we want to write
 
-And get a function asking for the query parameter:
-- id
-- data object
+- [Crud](#crud)
+- [SelectOne](#selectone)
+- [Select](#select)
+- [CountAll](#countall)
+- [Update](#update)
+- [UpdateOne](#updateone)
+- [Remove](#remove)
+- [RemoveOne](#removeone)
+- [BatchRemove](#batchremove)
+- [UpsertOne](#upsertone)
+- [BatchUpsert](#batchupsert)
+- [SelectByOrderedIdentifiers](#selectbyorderedidentifiers)
 
-And returning queryData that can be directly passed to the [`client.namedQuery`]() method.
-
-Some builder even allows to create several builder at once.
-
-For example the crud query builder give us builders to create queries for all basic crud operations:
+## `Crud`
 
 ```js
-// configuring the crud builder for the user table
-const userQueries = crud({
-    table: 'user',
-    primaryKey: 'id',
-    writableCols: ['name', 'firstname'],
+import crud from "co-postgres-queries/queries/crud";
+crud({
+    table,
+    writableCols,
+    primaryKey,
+    returnCols,
+    permanentFilters
 });
+```
 
-// give us a collection of functions to query the user table :
+Creates configured queries for insertOne, batchInsert, selectOne, select, updateOne, deleteOne and batchDelete.
 
-userQueries.selectOne(1);
-// returns:
+### Configuration
+
+- [table](configuration.html#table)
+- [primaryKey](configuration.html#primarykey)
+- [writableCols](configuration.html#writablecols)
+- [returnCols](configuration.html#returncols)
+- [searchableCols](configuration.html#searchablecols)
+- [specificSorts](configuration.html#specificsorts)
+- [groupByCols](configuration.html#groupbycols)
+- [withQuery](configuration.html#withquery)
+- [permanentFilters](configuration.html#permanentfilters)
+
+## `SelectOne`
+
+Allows to create a select query to retrieve one row based on a primaryKey.
+
+```js
+import { selectOne } from 'postgres-queries/builder';
+const selectOneUser = selectOne({
+    table: 'user',
+    primaryKey: ['id', 'uid'],
+    returnCols: ['id', 'name'],
+    permanentFilters: {},
+}); // first we pass a configuration object
+
+selectOneUser({ id: 1, uid: 2 }); // and then we pass the identifier
+// to get the result:
 {
-    sql: 'SELECT * FROM user WHERE id=$id;',
+    sql: `SELECT id, name FROM user WHERE id=$id AND uid=$uid;`,
     parameters: {
         id: 1,
+        uid: 2,
     },
     returnOne: true,
-}
-
-userQueries.select({ name: 'doe' });
-// returns:
-{
-    sql: 'SELECT * FROM user WHERE name=$name ORDER BY id ASC;',
-    parameters: { name: 'doe' },
-}
-
-userQueries.insertOne({ name: 'doe', firstname: 'john' });
-// returns:
-{
-    sql: (
-`INSERT INTO user (name, firstname)
-VALUES ($name, $firstname)
-RETURNING *;`
-    ),
-    parameters: {
-        name: 'doe',
-        firstname: 'john',
-    },
-    returnOne: true,
-}
-
-userQueries.batchInsert([
-    { name: 'doe', firstname: 'john' },
-    { name: 'doe', firstname: 'jane' },
-]);
-// returns:
-{
-    sql: (
-`INSERT INTO user(name, firstname)
-VALUES ('doe', 'john'), ('doe', 'jane')
-RETURNING *;`
-    ),
-    parameters: {
-        name1: 'doe',
-        firstname1: 'john',
-        name2: 'doe',
-        firstname2: 'jane',
-    },
-}
-
-userQueries.updateOne(1, { firstname: 'johnny' });
-// returns:
-{
-    sql: (
-`UPDATE user SET firstname=$firstname
-WHERE id=$id RETURNING *;`
-    ),
-    parameters: {
-        id: 1,
-        firstname: 'johnny',
-    }
-}
-
-userQueries.removeOne(1);
-// returns:
-{
-    sql: `DELETE FROM user WHERE id=$id RETURNING *;`,
-    parameters: { id: 1 },
-    returnOne: true,
-}
-//
-
-userQueries.batchRemove([1, 2]);
-// returns:
-{
-    sql: (
-`DELETE FROM user
-WHERE id IN ($id1, $id2)
-RETURNING *;`
-    ),
-    parameters: { id1: 1, id2: 2 },
-}
-
-userQueries.countAll();
-// returns:
-{
-    sql: `SELECT COUNT(*) FROM user;`,
 }
 ```
 
-And all this get properly sanitized. You cannot set value to column not in writableCols for example.
+Here are all the available configuration:
+
+- table: the table name the
+
+
+
+Creates a query to select one row by primaryKey.
+
+### Configuration
+
+- [table](configuration.html#table)
+- [primaryKey](configuration.html#primarykey)
+- [returnCols](configuration.html#returncols)
+- [permanentFilters](configuration.html#permanentfilters)
+
+### Parameters
+
+Either a single value or a literal representing the identifier.
+
+```js
+{
+    id1: value,
+    id2: value,
+    ...
+}
+```
+
+When passing a literan any key not present in primaryKey will be ignored.
+When passing a single value it will be mapped to the first primaryKey.
+
+## `Select`
+
+Creates a query to select one row.
+
+```js
+import select from "co-postgres-queries/queries/select";
+select({
+  table,
+  primaryKey,
+  returnCols,
+  searchableCols,
+  specificSorts,
+  groupByCols,
+  withQuery,
+  permanentFilters,
+  returnOne
+})({ limit, offset, filters, sort, sortDir });
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [primaryKey](configuration.html#primarykey)
+- [returnCols](configuration.html#returncols)
+- [searchableCols](configuration.html#searchablecols)
+- [specificSorts](configuration.html#specificsorts)
+- [groupByCols](configuration.html#groupbycols)
+- [withQuery](configuration.html#withquery)
+- [permanentFilters](configuration.html#permanentfilters)
+- [returnOne](configuration.html#returnone)
+
+### Parameters
+
+A literal object with:
+
+* **limit:** number of results to be returned
+* **offset:** number of results to be ignored
+* **filters:** a object taking as keys the column to filter on and as values the filter values
+
+For instance, specifying the following **filters** value:
+
+```js
+{
+    first_name: "John",
+    last_name: "Doe",
+    last_paid_at: null,
+}
+```
+
+Will produce the following `WHERE` clause:
+
+```sql
+WHERE
+    first_name = 'John'
+    AND last_name = 'Doe'
+    AND last_paid_at IS NULL
+```
+
+Other SQL matching operators may be used by specifying some prefixes to the column names. For instance:
+
+```js
+{
+    not_first_name: "John",           // first_name != "John"
+    not_last_paid_at: null,           // last_paid_at IS NOT NULL
+    from_last_paid_at: '2010-01-01',  // last_paid_at >= '2010-01-01'
+    to_last_paid_at: '3010-01-01',    // last_paid_at <= '3010-01-01'
+    like_position: 'Sales',           // position ILIKE '%Sales%'
+    not_like_position: 'Manager'      // position NOT ILIKE '%Manager%'
+}
+```
+
+It is also possible to match to all searchable column with match:
+
+```js
+{
+    match: 'value',
+}
+```
+
+will return only row for which any searchableCols matching value (case insensitive).
+
+* **sort**
+    Specify the column by which to filter the result (Additionally the result will always get sorted by the row identifiers to avoid random order)
+* **sortDir**
+    Specify the sort direction, either 'ASC' or 'DESC'
+
+## `CountAll`
+
+Create a query to count all rows. It also takes an optional plain object parameter `filters`, applied to the query in addition to the `permanentFilters`.
+
+```js
+import countAll from "co-postgres-queries/queries/countAll";
+countAll({ table, permanentFilters })({ filters: { enabled: true } });
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [permanentFilters](configuration.html#permanentfilters)
+
+## `Update`
+
+Creates a query to update rows.
+
+```js
+import update from "co-postgres-queries/queries/update";
+update({
+    table,
+    writableCols,
+    filterCols,
+    returnCols,
+    permanentFilters
+})(filters, data);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [writableCols](configuration.html#writablecols)
+- [filterCols](configuration.html#filtercols)
+- [returnCols](configuration.html#returncols)
+- [permanentFilters](configuration.html#permanentfilters)
+
+### Parameters
+
+Two arguments:
+
+- filters:
+    literal specifying wanted value for given column
+    example:
+    ```js
+    {
+        column: "value";
+    }
+    ```
+    will update only row for which column equal 'value'
+- data: a literal specifying the new values
+
+## `UpdateOne`
+
+Creates a query to update one row.
+
+```js
+import updateOne from "co-postgres-queries/queries/updateOne";
+updateOne({
+  table,
+  writableCols,
+  primaryKey,
+  returnCols,
+  permanentFilters
+})(identifier, data);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [writableCols](configuration.html#writablecols)
+- [primaryKey](configuration.html#primarykey)
+- [returnCols](configuration.html#returncols)
+- [permanentFilters](configuration.html#permanentfilters)
+
+### Parameters
+
+Two arguments:
+
+- identifier: either a single value for a single primaryKey column, or a literal if several columns:`{ id1: value, id2: otherValue }`. All configured primaryKey columns must be given a value.
+- data: a literal specifying the column to update
+
+## `Remove`
+
+Creates a query to delete rows.
+
+```js
+import remove from "co-postgres-queries/queries/remove";
+remove({ table, filterCols, returnCols, permanentFilters })(filters);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [filterCols](configuration.html#filtercols)
+- [returnCols](configuration.html#returncols)
+- [permanentFilters](configuration.html#permanentfilters)
+
+### Parameters
+
+A literal specifying wanted value for given column
+example:
+
+```js
+{
+    column: "value";
+}
+```
+
+will update only row for which column equal 'value'
+
+## `RemoveOne`
+
+Creates a query to delete one row.
+
+```js
+import removeOne from "co-postgres-queries/queries/removeOne";
+removeOne({ table, primaryKey, returnCols, permanentFilters })(identitfier);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [primaryKey](configuration.html#primarykey)
+- [returnCols](configuration.html#returncols)
+- [permanentFilters](configuration.html#permanentfilters)
+
+### Parameters
+
+The identifier: either a single value for a single primaryKey column, or a literal if several columns:`{ id1: value, id2: otherValue }`. All configured primaryKey columns must be given a value.
+
+## `BatchRemove`
+
+Allow to create a query to delete several row at once
+
+```js
+import batchRemove from "co-postgres-queries/queries/batchRemove";
+batchRemove({ table, primaryKey, returnCols, permanentFilters })(
+    identifierList
+);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [primaryKey](configuration.html#primarykey)
+- [returnCols](configuration.html#returncols)
+- [permanentFilters](configuration.html#permanentfilters)
+
+### Parameters
+
+The list of identifier either an array of single value for a single primaryKey column, or an array of literal if several columns:`[{ id1: value, id2: otherValue }, ...]`. All configured primaryKey columns must be given a value.
+
+## `UpsertOne`
+
+Creates a query to update one row or create it if it does not already exists.
+
+```js
+import upsertOne from "co-postgres-queries/queries/upsertOne";
+upsertOne({
+    table,
+    primaryKey,
+    writableCols,
+    returnCols,
+    permanentFilters
+})(row);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [primaryKey](configuration.html#primarykey)
+- [writableCols](configuration.html#writablecols)
+- [returnCols](configuration.html#returncols)
+- [permanentFilters](configuration.html#permanentfilters)
+
+### Parameters
+
+The literal representing the rows to upsert
+
+## `BatchUpsert`
+
+Creates a query to update a batch row creating those that does not already exists.
+
+```js
+import batchUpsert from "co-postgres-queries/queries/batchUpsert";
+batchUpsert({
+    table,
+    primaryKey,
+    writableCols,
+    returnCols,
+    permanentFilters
+})(rows);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [primaryKey](configuration.html#primarykey)
+- [writableCols](configuration.html#writablecols)
+- [returnCols](configuration.html#returncols)
+- [permanentFilters](configuration.html#permanentfilters)
+
+### Parameters
+
+The array of literal representing rows to upsert
+
+## `SelectByOrderedIdentifiers`
+
+Creates a query to select multiple row given an array of identifier. The result will keep the order of the identifier. Due to the nature of the query, this will only work for primaryKey composed of a single column.
+
+```js
+import selectByOrderedIdentifiers from "co-postgres-queries/queries/selectByOrderedIdentifiers";
+selectByOrderedIdentifiers({
+    table,
+    primaryKey,
+    returnCols
+})(values);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [primaryKey](configuration.html#primarykey)
+- [returnCols](configuration.html#returncols)
+
+### Parameters
+
+The array of identifier to retrieve. The array order will determine the result order.

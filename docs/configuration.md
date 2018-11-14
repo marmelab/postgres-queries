@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "Documentation"
+title: "Builder Configuration"
 ---
 # Query builder configuration
 
@@ -8,11 +8,14 @@ The [query builders](#builderList) possess the following configurations options
 
 - [table](#table)
 - [primaryKey](#primarykey)
+- [returnCols](#returncols)
 - [writableCols](#writablecols)
-- [searchabeCols](#searchablecols)
+- [searchableCols](#searchablecols)
+- [filterCols](#filtercols)
 - [specificSorts](#specificsorts)
 - [groupByCols](#groupbycols)
-- [withQUery](#withQuery)
+- [withQuery](#withquery)
+- [permanentFilter](#permanentfilter)
 
 ## `table`
 
@@ -23,20 +26,20 @@ The table name can also be a join expression.
 `user JOIN command ON user.id command.user_id`
 
 Used by
-- [selectOne](builderList.html/#selectOne)
-- [select](builderList.html/#select)
-- [count](builderList.html/#count)
-- [selectByOrderedIdentifiers](builderList.html/#selectByOrderedIdentifiers)
-- [upsertOne](builderList.html/#upsertOne)
-- [batchInsert](builderList.html/#batchInsert)
-- [BatchUpsert](builderList.html/#BatchUpsert)
-- [insertOne](builderList.html/#insertOne)
-- [remove](builderList.html/#remove)
-- [batchRemove](builderList.html/#batchRemove)
-- [removeOne](builderList.html/#removeOne)
-- [update](builderList.html/#update)
-- [updateOne](builderList.html/#updateOne)
-- [crud](builderList.html/#crud)
+- [selectOne](queryBuilder.html#selectone)
+- [select](queryBuilder.html#select)
+- [count](queryBuilder.html#count)
+- [selectByOrderedIdentifiers](queryBuilder.html#selectbyorderedidentifiers)
+- [upsertOne](queryBuilder.html#upsertone)
+- [batchInsert](queryBuilder.html#batchinsert)
+- [BatchUpsert](queryBuilder.html#batchupsert)
+- [insertOne](queryBuilder.html#insertone)
+- [remove](queryBuilder.html#remove)
+- [batchRemove](queryBuilder.html#batchremove)
+- [removeOne](queryBuilder.html#removeone)
+- [update](queryBuilder.html#update)
+- [updateOne](queryBuilder.html#updateone)
+- [crud](queryBuilder.html#crud)
 
 ## `primaryKey`
 
@@ -45,19 +48,39 @@ Specify the primary key for the query. The primary key is one or more column tha
 Accept either a string for a single id (`'id'`), or an array of string for a composite primaryKey (`['user_id', 'command_id']`)
 
 Used by
-- [selectOne](builderList.html/#selectOne)
-- [select](builderList.html/#select)
-- [selectByOrderedIdentifiers](builderList.html/#selectByOrderedIdentifiers)
-- [upsertOne](builderList.html/#upsertOne)
-- [batchInsert](builderList.html/#batchInsert)
-- [BatchUpsert](builderList.html/#BatchUpsert)
-- [insertOne](builderList.html/#insertOne)
-- [remove](builderList.html/#remove)
-- [batchRemove](builderList.html/#batchRemove)
-- [removeOne](builderList.html/#removeOne)
-- [update](builderList.html/#update)
-- [updateOne](builderList.html/#updateOne)
-- [crud](builderList.html/#crud)
+- [selectOne](queryBuilder.html#selectone)
+- [select](queryBuilder.html#select)
+- [selectByOrderedIdentifiers](queryBuilder.html#selectbyorderedidentifiers)
+- [upsertOne](queryBuilder.html#upsertone)
+- [batchInsert](queryBuilder.html#batchinsert)
+- [BatchUpsert](queryBuilder.html#batchupsert)
+- [insertOne](queryBuilder.html#insertone)
+- [remove](queryBuilder.html#remove)
+- [batchRemove](queryBuilder.html#batchremove)
+- [removeOne](queryBuilder.html#removeone)
+- [update](queryBuilder.html#update)
+- [updateOne](queryBuilder.html#updateone)
+- [crud](queryBuilder.html#crud)
+
+## `returnCols`
+
+The list of columns that will be returned from query result.
+
+Used By
+- [selectOne](queryBuilder.html#selectone)
+- [select](queryBuilder.html#select)
+- [selectByOrderedIdentifiers](queryBuilder.html#selectbyorderedidentifiers)
+- [upsertOne](queryBuilder.html#upsertone)
+- [batchInsert](queryBuilder.html#batchinsert)
+- [BatchUpsert](queryBuilder.html#batchupsert)
+- [insertOne](queryBuilder.html#insertone)
+- [remove](queryBuilder.html#remove)
+- [batchRemove](queryBuilder.html#batchremove)
+- [removeOne](queryBuilder.html#removeone)
+- [update](queryBuilder.html#update)
+- [updateOne](queryBuilder.html#updateone)
+- [crud](queryBuilder.html#crud)
+
 
 ## `writableCols`
 
@@ -69,21 +92,29 @@ Any key not in this array will be removed from the filter parameter.
 ```
 
 Used by
-- [upsertOne](builderList.html/#upsertOne)
-- [batchInsert](builderList.html/#batchInsert)
-- [BatchUpsert](builderList.html/#BatchUpsert)
-- [insertOne](builderList.html/#insertOne)
-- [update](builderList.html/#update)
-- [updateOne](builderList.html/#updateOne)
-- [crud](builderList.html/#crud)
+- [upsertOne](queryBuilder.html#upsertone)
+- [batchInsert](queryBuilder.html#batchinsert)
+- [BatchUpsert](queryBuilder.html#batchupsert)
+- [insertOne](queryBuilder.html#insertone)
+- [update](queryBuilder.html#update)
+- [updateOne](queryBuilder.html#updateone)
+- [crud](queryBuilder.html#crud)
 
 ## `searchableCols`
 
 The list of column that can be searched in select query.
 
 Used by
-- [select](builderList.html/#select)
-- [crud](builderList.html/#crud)
+- [select](queryBuilder.html#select)
+- [crud](queryBuilder.html#crud)
+
+## `filterCols`
+
+The list of columns that can be used to filter the rows
+
+Used By
+- [Remove](queryBuilder.html#remove)
+- [Update](queryBuilder.html#update)
 
 ## `specificSorts`
 
@@ -113,19 +144,19 @@ ORDER BY CASE level
 END
 ```
 
-Obviously this will be only used when sorting by the concerned column see [select](builderList.html/#select)
+Obviously this will be only used when sorting by the concerned column see [select](queryBuilder.html#select)
 
 Used by
-- [select](builderList.html/#select)
-- [crud](builderList.html/#crud)
+- [select](queryBuilder.html#select)
+- [crud](queryBuilder.html#crud)
 
 ## `groupByCols`
 
 An optional array of columns name by which to group the result in select query.
 
 Used by
-- [select](builderList.html/#select)
-- [crud](builderList.html/#crud)
+- [select](queryBuilder.html#select)
+- [crud](queryBuilder.html#crud)
 
 ## `withQuery`
 
@@ -143,11 +174,34 @@ Note: if the builder detect join in the table name it will automatically use a W
 You can set withQuery to false to deactivate this.
 
 Used by
-- [select](builderList.html/#select)
-- [crud](builderList.html/#crud)
+- [select](queryBuilder.html#select)
+- [crud](queryBuilder.html#crud)
 
 
-## permanentFilter
+## permanentFilters
+
+Used by
+- [selectOne](queryBuilder.html#selectone)
+- [select](queryBuilder.html#select)
+- [count](queryBuilder.html#count)
+- [upsertOne](queryBuilder.html#upsertone)
+- [BatchUpsert](queryBuilder.html#batchupsert)
+- [remove](queryBuilder.html#remove)
+- [batchRemove](queryBuilder.html#batchremove)
+- [removeOne](queryBuilder.html#removeone)
+- [update](queryBuilder.html#update)
+- [updateOne](queryBuilder.html#updateone)
+- [crud](queryBuilder.html#crud)
 
 Allow to set permanent filter that will add filter on every query.
-Useful to hide som
+Useful to hide some document based on a filter.
+e.g. hide all user with role admin.
+
+## returnOne
+
+Optional, if set to true, returns only the first result instead of an array.
+
+Used by
+- [select](queryBuilder.html#select)
+- [remove](queryBuilder.html#remove)
+- [update](queryBuilder.html#update)

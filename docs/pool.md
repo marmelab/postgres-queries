@@ -1,14 +1,14 @@
 ---
 layout: default
-title: "Documentation"
+title: "Pool"
 ---
 # Pool
 Extend [node-pg-pool](https://github.com/brianc/node-pg-pool)
 Allow to [connect](#connection) to postgresql and execute query.
 
 It adds:
-- [namedQuery](#client.namedQuery)
-- [link](#client.link)
+- [namedQuery](#clientnamedquery)
+- [link](#clientlink)
 
 ## `Connection`
 ```js
