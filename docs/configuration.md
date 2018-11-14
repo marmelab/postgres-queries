@@ -4,7 +4,7 @@ title: "Builder Configuration"
 ---
 # Query builder configuration
 
-The [query builders](#builderList) possess the following configurations options
+The [query builders](#builderList) have the following configurations options
 
 - [table](#table)
 - [primaryKey](#primarykey)
@@ -85,7 +85,7 @@ Used By
 ## `writableCols`
 
 The list of columns that can be set in insert and update queries.
-Any key not in this array will be removed from the filter parameter.
+Any key not specified in this parameter will be removed from the filter.
 
 ```js
 ['name', 'firstname']
@@ -121,8 +121,8 @@ Used By
 Allow to specify specific sorts for select.
 A specific sorts is used to tell the builder how to sort an enumerable column.
 
-For example imagine a level column that can have the values of `novice`, `expert` or `master`.
-In order to be able to sort these values, we need to tell sql which value is greater than the other.
+For example say we have a level column that can have the values of `novice`, `expert` or `master`.
+In order to sort these values, we need to tell sql which value is greater than the other.
 In our case `master` > `expert` > `novice`.
 So we pass
 ```js

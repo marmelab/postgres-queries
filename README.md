@@ -18,8 +18,8 @@ go to [https://marmelab.com/postgres-queries/](https://marmelab.com/postgres-que
 Extend [node-pg-pool](https://github.com/brianc/node-pg-pool)
 Allow to connect to postgresql and execute query
 It adds:
-- namedQuery
-- a link helper to link a query builder to the client.
+- Named query parameter support
+- An helper to link a query builder to the client.
 
 ## Query Builder
 The main idea behind the query builder is to be able build a query thanks to a configuration object:
@@ -28,15 +28,39 @@ The main idea behind the query builder is to be able build a query thanks to a c
 - the columns we want to read
 - the columns we want to write
 
-And get a function asking for the query parameter:
+The builder returns a function which ask for the query parameter:
 - id
 - data object
 
-And returning queryData that can be directly passed to the `client.namedQuery` method.
+And then returns queryData that can be directly passed to the `client.namedQuery` method.
 
 Some builder even allows to create several builder at once.
 
-For example the crud query builder give us builders to create queries for all basic crud operations:
+For example the crud query builder give us builders to:
+
+- create selectOne query to select one item:
+
+```js
+const selectOneUserById = selectOne({
+    table: 'user',
+    primaryKey: 'id',
+    returnCols: ['name', 'firstname'],
+});
+
+// give us a function to get one user by id
+
+selectOneUserById(1);
+// returns:
+{
+    sql: 'SELECT * FROM user WHERE id=$id;',
+    parameters: {
+        id: 1,
+    },
+    returnOne: true,
+}
+```
+
+- create queries for all basic crud operations:
 
 ```js
 // configuring the crud builder for the user table
