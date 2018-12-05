@@ -1,15 +1,28 @@
 {
   "name": "@postgres-queries/builder",
   "version": "0.1.9",
-  "description": "",
+  "description": "Query builder for PostgreSQL in Node.js, built for async",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
     "prepare": "tsc -p tsconfig.build.json"
   },
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "Marmelab",
+    "email": "contact@marmelab.com",
+    "url": "https://marmelab.com"
+  },
+  "contributors": [
+    "Alexis Janvier <alexis@marmelab.com>",
+    "Thiery Michel <thiery@marmelab.com>",
+    "Julien Demangeon <julien@marmelab.com>"
+  ],
   "license": "MIT",
+  "homepage": "https://github.com/marmelab/postgres-queries",
+  "bugs": {
+    "url": "https://github.com/marmelab/postgres-queries/issues"
+  },
   "dependencies": {
     "@types/signale": "~1.2.0",
     "signale": "~1.2.1"

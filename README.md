@@ -11,9 +11,6 @@ Creating query and executing them are two separate concerns. And thus postgres-q
 - The pool, that allows to connect to the postgres database and execute query.
 - The query builders (insertOne, selectOne, etc..) that allows to generate sql, and the corresponding parameters.
 
-## Documentation
-go to [https://marmelab.com/postgres-queries/](https://marmelab.com/postgres-queries/)
-
 ## Pool
 Extend [node-pg-pool](https://github.com/brianc/node-pg-pool)
 Allow to connect to postgresql and execute query
