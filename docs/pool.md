@@ -25,6 +25,17 @@ const poolingOptions = {
     idleTimeoutMillis // how long a client is allowed to remain idle before being closed (defaults to 30 000 ms)
 }
 const pool = new Pool(clientOptions, poolingOptions);
+
+// Or, you can get a namedQuery directly from another pool client without decorating it:
+import Pool from 'pg-pool';
+import { namedQueryFromPoolClient } from 'postgres-queries/pool';
+
+const pool = new Pool();
+pool.connect().then(client => {
+    const namedQuery = namedQueryFromPoolClient(client);
+
+    //
+});
 ```
 
 ### Getting client with promise
