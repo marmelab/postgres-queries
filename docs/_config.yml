@@ -1,0 +1,5 @@
+name: postgres-queries documentation
+markdown: kramdown
+kramdown:
+  input: GFM
+highlighter: rouge

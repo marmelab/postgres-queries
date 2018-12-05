@@ -64,7 +64,7 @@ function setupClient(client: pg.PoolClient) {
     };
 }
 
-export const PgPool = (
+export default (
     { user, password, database, host, port }: pg.ConnectionConfig,
     config: pg.PoolConfig = { max: 10, idleTimeoutMillis: 30000 },
 ) => {

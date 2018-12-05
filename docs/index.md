@@ -1,3 +1,7 @@
+---
+layout: default
+title: "Documentation"
+---
 # postgres-queries
 
 Utility to generate and execute postgresql queries with ease.
@@ -8,59 +12,33 @@ Utility to generate and execute postgresql queries with ease.
 
 ## Introduction
 Creating query and executing them are two separate concerns. And thus postgres-queries is divided in two parts:
-- The pool, that allows to connect to the postgres database and execute query.
-- The query builders (insertOne, selectOne, etc..) that allows to generate sql, and the corresponding parameters.
+- [The Pool](pool), that allows to connect to the postgres database and execute query.
+- [The query builders](queryBuilder.html) (insertOne, selectOne, etc..) that allows to generate sql, and the corresponding parameters.
 
-## Documentation
-go to [https://marmelab.com/postgres-queries/](https://marmelab.com/postgres-queries/)
 
 ## Pool
 Extend [node-pg-pool](https://github.com/brianc/node-pg-pool)
 Allow to connect to postgresql and execute query
 It adds:
-- Named query parameter support
-- An helper to link a query builder to the client.
+- namedQuery
+- a link helper to link a query builder to the client.
 
 ## Query Builder
-The main idea behind the query builder is to be able build a query thanks to a configuration object:
+The main idea behind the query builder is to be able to just give a configuration object:
 - the name of a table
 - its primary key(s)
 - the columns we want to read
 - the columns we want to write
 
-The builder returns a function which ask for the query parameter:
+And get a function asking for the query parameter:
 - id
 - data object
 
-And then returns queryData that can be directly passed to the `client.namedQuery` method.
+And returning queryData that can be directly passed to the `client.namedQuery` method.
 
 Some builder even allows to create several builder at once.
 
-For example the crud query builder give us builders to:
-
-- create selectOne query to select one item:
-
-```js
-const selectOneUserById = selectOne({
-    table: 'user',
-    primaryKey: 'id',
-    returnCols: ['name', 'firstname'],
-});
-
-// give us a function to get one user by id
-
-selectOneUserById(1);
-// returns:
-{
-    sql: 'SELECT * FROM user WHERE id=$id;',
-    parameters: {
-        id: 1,
-    },
-    returnOne: true,
-}
-```
-
-- create queries for all basic crud operations:
+For example the crud query builder give us builders to create queries for all basic crud operations:
 
 ```js
 // configuring the crud builder for the user table

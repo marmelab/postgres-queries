@@ -20,3 +20,12 @@ build: ## Make local packages build. Usefull to test build because otherwise the
 publish: ## Publish on npm
 	yarn clean
 	./node_modules/.bin/lerna publish
+
+serve-documentation:
+	docker run -it --rm \
+		-p 4000:4000 \
+		-v "${PWD}/docs:/usr/src/app" \
+		starefossen/github-pages:onbuild \
+		jekyll serve \
+			--host=0.0.0.0 \
+			--incremental
