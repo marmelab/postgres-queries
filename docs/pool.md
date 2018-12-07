@@ -33,8 +33,6 @@ import { namedQueryFromPoolClient } from 'postgres-queries/pool';
 const pool = new Pool();
 pool.connect().then(client => {
     const namedQuery = namedQueryFromPoolClient(client);
-
-    //
 });
 ```
 
