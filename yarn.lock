@@ -16,24 +16,6 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@postgres-queries/builder@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@postgres-queries/builder/-/builder-0.1.9.tgz#7df0e44696ea1d085c05f8f91ba6d27c3cc1aaac"
-  integrity sha1-ffDkRpbqHQhcBfj5G6bSfDzBqqw=
-  dependencies:
-    "@types/signale" "~1.2.0"
-    signale "~1.2.1"
-
-"@postgres-queries/pool@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@postgres-queries/pool/-/pool-0.1.9.tgz#6c919dcfae51186ae25614fdf87cc2d7fb0516c8"
-  integrity sha1-bJGdz65RGGriVhT9+HzC1/sFFsg=
-  dependencies:
-    "@types/pg" "~7.4.9"
-    "@types/signale" "~1.2.0"
-    pg "~7.4.3"
-    signale "~1.2.1"
-
 "@types/events@*":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
