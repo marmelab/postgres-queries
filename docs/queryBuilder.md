@@ -8,6 +8,7 @@ title: "Query Builder"
 - [SelectOne](#selectone)
 - [Select](#select)
 - [CountAll](#countall)
+- [InsertOne](#insertone)
 - [Update](#update)
 - [UpdateOne](#updateone)
 - [Remove](#remove)
@@ -198,6 +199,31 @@ countAll({ table, permanentFilters })({ filters: { enabled: true } });
 
 - [table](configuration.html#table)
 - [permanentFilters](configuration.html#permanentfilters)
+
+## `InsertOne`
+
+Creates a query to insert a row in the database.
+
+```js
+import { insertOne } from 'postgres-queries';
+
+insertOne({
+  table,
+  writableCols,
+  returnCols,
+})(data);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [writableCols](configuration.html#writablecols)
+- [returnCols](configuration.html#returncols)
+
+### Parameters
+
+One argument:
+- data: a literal specifying the column to insert
 
 ## `Update`
 
