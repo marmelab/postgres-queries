@@ -5,3 +5,4 @@ lib
 build
 lerna-debug.log
 docs/_site
+docs/.jekyll-metadata

@@ -8,6 +8,7 @@ title: "Query Builder"
 - [SelectOne](#selectone)
 - [Select](#select)
 - [CountAll](#countall)
+- [InsertOne](#insertone)
 - [Update](#update)
 - [UpdateOne](#updateone)
 - [Remove](#remove)
@@ -20,7 +21,8 @@ title: "Query Builder"
 ## `Crud`
 
 ```js
-import crud from "co-postgres-queries/queries/crud";
+import { crud}  from 'postgres-queries';
+
 crud({
     table,
     writableCols,
@@ -49,7 +51,8 @@ Creates configured queries for insertOne, batchInsert, selectOne, select, update
 Allows to create a select query to retrieve one row based on a primaryKey.
 
 ```js
-import { selectOne } from 'postgres-queries/builder';
+import { selectOne } from 'postgres-queries';
+
 const selectOneUser = selectOne({
     table: 'user',
     primaryKey: ['id', 'uid'],
@@ -104,7 +107,8 @@ When passing a single value it will be mapped to the first primaryKey.
 Creates a query to select one row.
 
 ```js
-import select from "co-postgres-queries/queries/select";
+import { select } from 'postgres-queries';
+
 select({
   table,
   primaryKey,
@@ -190,7 +194,8 @@ will return only row for which any searchableCols matching value (case insensiti
 Create a query to count all rows. It also takes an optional plain object parameter `filters`, applied to the query in addition to the `permanentFilters`.
 
 ```js
-import countAll from "co-postgres-queries/queries/countAll";
+import { countAll } from 'postgres-queries';
+
 countAll({ table, permanentFilters })({ filters: { enabled: true } });
 ```
 
@@ -199,12 +204,38 @@ countAll({ table, permanentFilters })({ filters: { enabled: true } });
 - [table](configuration.html#table)
 - [permanentFilters](configuration.html#permanentfilters)
 
+## `InsertOne`
+
+Creates a query to insert a row in the database.
+
+```js
+import { insertOne } from 'postgres-queries';
+
+insertOne({
+  table,
+  writableCols,
+  returnCols,
+})(data);
+```
+
+### Configuration
+
+- [table](configuration.html#table)
+- [writableCols](configuration.html#writablecols)
+- [returnCols](configuration.html#returncols)
+
+### Parameters
+
+One argument:
+- data: a literal specifying the column to insert
+
 ## `Update`
 
 Creates a query to update rows.
 
 ```js
-import update from "co-postgres-queries/queries/update";
+import { update } from 'postgres-queries';
+
 update({
     table,
     writableCols,
@@ -301,7 +332,8 @@ will update only row for which column equal 'value'
 Creates a query to delete one row.
 
 ```js
-import removeOne from "co-postgres-queries/queries/removeOne";
+import { removeOne } from 'postgres-queries';
+
 removeOne({ table, primaryKey, returnCols, permanentFilters })(identitfier);
 ```
 
@@ -321,7 +353,8 @@ The identifier: either a single value for a single primaryKey column, or a liter
 Allow to create a query to delete several row at once
 
 ```js
-import batchRemove from "co-postgres-queries/queries/batchRemove";
+import { batchRemove } from 'postgres-queries';
+
 batchRemove({ table, primaryKey, returnCols, permanentFilters })(
     identifierList
 );
@@ -343,7 +376,8 @@ The list of identifier either an array of single value for a single primaryKey c
 Creates a query to update one row or create it if it does not already exists.
 
 ```js
-import upsertOne from "co-postgres-queries/queries/upsertOne";
+import { upsertOne } from 'postgres-queries';
+
 upsertOne({
     table,
     primaryKey,
@@ -370,7 +404,8 @@ The literal representing the rows to upsert
 Creates a query to update a batch row creating those that does not already exists.
 
 ```js
-import batchUpsert from "co-postgres-queries/queries/batchUpsert";
+import { batchUpsert } from 'postgres-queries';
+
 batchUpsert({
     table,
     primaryKey,
@@ -397,7 +432,8 @@ The array of literal representing rows to upsert
 Creates a query to select multiple row given an array of identifier. The result will keep the order of the identifier. Due to the nature of the query, this will only work for primaryKey composed of a single column.
 
 ```js
-import selectByOrderedIdentifiers from "co-postgres-queries/queries/selectByOrderedIdentifiers";
+import { selectByOrderedIdentifiers } from 'postgres-queries';
+
 selectByOrderedIdentifiers({
     table,
     primaryKey,
