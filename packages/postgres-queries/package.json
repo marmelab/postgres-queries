@@ -1,6 +1,6 @@
 {
   "name": "postgres-queries",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Query builder for PostgreSQL in Node.js, built for async",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -24,7 +24,7 @@
     "url": "https://github.com/marmelab/postgres-queries/issues"
   },
   "dependencies": {
-    "@postgres-queries/builder": "^0.2.0",
+    "@postgres-queries/builder": "^0.2.1",
     "@postgres-queries/pool": "^0.2.0"
   }
 }
