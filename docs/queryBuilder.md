@@ -17,6 +17,7 @@ title: "Query Builder"
 - [UpsertOne](#upsertone)
 - [BatchUpsert](#batchupsert)
 - [SelectByOrderedIdentifiers](#selectbyorderedidentifiers)
+- [Transactions](#transactions)
 
 ## `Crud`
 
@@ -450,3 +451,64 @@ selectByOrderedIdentifiers({
 ### Parameters
 
 The array of identifier to retrieve. The array order will determine the result order.
+
+## Transactions
+
+postgres-queries exposes all the transactions commands:
+
+- begin
+- commit
+- rollback
+- savepoint
+
+### Simple Transaction
+
+```js
+import Pool from 'postgres-queries/pool';
+
+import { begin, commit, rollback } from 'postgres-queries';
+
+const poll = new Pool();
+
+const doRiskyChanges = async () => {
+    const client = await = pool.connect();
+
+    await client.namedQuery(begin());
+
+    try {
+        // Do risky changes
+
+        await client.namedQuery(commit());
+    } catch (error) {
+        await client.namedQuery(rollback());
+    }
+} 
+```
+
+### Transaction With Savepoint
+
+```js
+import { begin, commit, savepoint, rollback } from 'postgres-queries';
+
+const doRiskyChanges = async () => {
+    const client = await = pool.connect();
+    let savename = undefined;
+
+    await client.namedQuery(begin());
+
+    try {
+        // Do risky change 1
+        await client.namedQuery(savepoint('savepoint_1'));
+        savename = 'savepoint_1';
+
+        // Do risky change 2
+        await client.namedQuery(savepoint('savepoint_2'));
+        savename = 'savepoint_2';
+
+        // Do risky change 3
+        await client.namedQuery(commit());
+    } catch (error) {
+        await client.namedQuery(rollback(savename));
+    }
+} 
+```
