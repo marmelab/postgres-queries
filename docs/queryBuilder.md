@@ -461,7 +461,7 @@ postgres-queries exposes all the transactions commands:
 - rollback
 - savepoint
 
-### Simple transaction
+### Simple Transaction
 
 ```js
 import Pool from 'postgres-queries/pool';
@@ -485,10 +485,10 @@ const doRiskyChanges = async () => {
 } 
 ```
 
-### Transaction with savepoint
+### Transaction With Savepoint
 
 ```js
-import { begin, commit, rollback } from 'postgres-queries';
+import { begin, commit, savepoint, rollback } from 'postgres-queries';
 
 const doRiskyChanges = async () => {
     const client = await = pool.connect();
